@@ -1,0 +1,9 @@
+{
+  "npmScope": "trestle-roundhouse",
+  "affected": {"defaultBase": "main"},
+  "tasksRunnerOptions": {},
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "libs"
+  }
+}

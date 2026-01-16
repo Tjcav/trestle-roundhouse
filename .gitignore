@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+.envrc
+.DS_Store
+coverage/

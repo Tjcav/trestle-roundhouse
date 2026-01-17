@@ -1,0 +1,25 @@
+#!/bin/bash
+# Thin wrapper: auto-assemble ChangeScope, call Control Point CLI, fail hard if skipped or rejected
+set -euo pipefail
+
+# Auto-detect repo root
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+cd "$REPO_ROOT"
+
+# Detect changed files (git diff)
+CHANGED_FILES=$(git diff --name-only --cached)
+
+# If no changes, exit 0
+if [ -z "$CHANGED_FILES" ]; then
+  echo "No changes detected. Gate passed."
+  exit 0
+fi
+
+# Build ChangeScope (for demo: just use repo and paths)
+SCOPE_ARGS=""
+for f in $CHANGED_FILES; do
+  SCOPE_ARGS+=" --path $f"
+done
+
+# Call Control Point CLI
+python3 apps/control-point/cli/main.py $SCOPE_ARGS "$@"

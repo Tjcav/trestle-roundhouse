@@ -1,0 +1,31 @@
+{
+    "contract_version": 1,
+    "required_scope_shape": {
+        "repo": "string (optional)",
+        "path": "string (optional)",
+        "subsystem": "string (optional)",
+        "api": "string (optional)"
+    },
+    "allowed_scope_dimensions": [
+        "repo",
+        "path",
+        "subsystem",
+        "api"
+    ],
+    "required_gate_invocation": true,
+    "exit_codes": {
+        "0": "proceed",
+        "10": "warnings_only",
+        "20": "conflict_arbitration_required",
+        "30": "hard_reject"
+    },
+    "gate_response_shape": [
+        "contract_version",
+        "scope",
+        "summary",
+        "claims",
+        "conflicts",
+        "pass_",
+        "blocking_claims"
+    ]
+}

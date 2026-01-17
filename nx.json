@@ -1,6 +1,8 @@
 {
   "npmScope": "trestle-roundhouse",
-  "affected": {"defaultBase": "main"},
+  "affected": {
+    "defaultBase": "main"
+  },
   "tasksRunnerOptions": {},
   "workspaceLayout": {
     "appsDir": "apps",

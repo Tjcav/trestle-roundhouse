@@ -2,7 +2,10 @@
   "name": "trestle-roundhouse",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["apps/*", "libs/*"],
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
   "devDependencies": {
     "nx": "^18.0.0",
     "typescript": "^5.0.0",

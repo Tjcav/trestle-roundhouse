@@ -5,6 +5,7 @@
     "outDir": "dist"
   },
   "include": [
-    "src"
+    "src",
+    "../control-point/frontend/src"
   ]
 }

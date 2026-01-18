@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "antd/dist/reset.css";
 import { ConfigProvider, Layout, Menu, Space, Typography } from "antd";
+import ControlPointApp from "../../control-point/frontend/src/App";
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -20,6 +21,7 @@ const SECTIONS: Record<SuiteKey, { key: SectionKey; label: string }[]> = {
     { key: "status", label: "Status" },
     { key: "configuration", label: "Configuration" },
     { key: "export", label: "Export" },
+    { key: "control-point", label: "Control Point" },
   ],
   systems: [
     { key: "home-assistant", label: "Home Assistant" },
@@ -88,10 +90,14 @@ function App() {
                 {SUITES.find((item) => item.key === suite)?.label}
               </Title>
               <Text type="secondary">Section: {section}</Text>
-              <Text>
-                This is the Roundhouse shell layout (Ant-based). Sub-app content will
-                render here once mounted.
-              </Text>
+              {suite === "overview" && section === "control-point" ? (
+                <ControlPointApp embedded />
+              ) : (
+                <Text>
+                  This is the Roundhouse shell layout (Ant-based). Sub-app content will
+                  render here once mounted.
+                </Text>
+              )}
             </Space>
           </Content>
         </Layout>

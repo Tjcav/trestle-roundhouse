@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "antd/dist/reset.css";
-import { ConfigProvider, Layout, Menu, Space, Typography } from "antd";
+import { Alert, Badge, ConfigProvider, Layout, Menu, Space, Typography } from "antd";
 import ControlPointApp from "../../control-point/frontend/src/App";
 
 const { Header, Sider, Content } = Layout;
@@ -40,11 +40,19 @@ const SECTIONS: Record<SuiteKey, { key: SectionKey; label: string }[]> = {
 function App() {
   const [suite, setSuite] = React.useState<SuiteKey>("overview");
   const [section, setSection] = React.useState<SectionKey>("status");
+  const [haAvailable, setHaAvailable] = React.useState<boolean>(false);
+  const [trestleAvailable, setTrestleAvailable] = React.useState<boolean>(false);
+  const [statusError, setStatusError] = React.useState<string | null>(null);
 
-  const suiteItems = SUITES.map((item) => ({ key: item.key, label: item.label }));
+  const suiteItems = SUITES.map((item) => ({
+    key: item.key,
+    label: item.label,
+    disabled: item.key === "systems" ? !haAvailable : item.key === "profiles" ? !trestleAvailable : false,
+  }));
   const sectionItems = SECTIONS[suite].map((item) => ({
     key: item.key,
     label: item.label,
+    disabled: item.key === "status" ? false : suite === "systems" ? !haAvailable : suite === "profiles" ? !trestleAvailable : false,
   }));
 
   React.useEffect(() => {
@@ -53,6 +61,37 @@ function App() {
       setSection(firstSection.key);
     }
   }, [suite, section]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const fetchStatus = async () => {
+      try {
+        const [haRes, trestleRes] = await Promise.all([
+          fetch("/api/ha/status"),
+          fetch("/api/trestle/status"),
+        ]);
+        const haData = haRes.ok ? await haRes.json() : { ha_available: false };
+        const trestleData = trestleRes.ok ? await trestleRes.json() : { trestle_available: false };
+        if (!cancelled) {
+          setHaAvailable(Boolean(haData.ha_available));
+          setTrestleAvailable(Boolean(trestleData.trestle_available));
+          setStatusError(null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setStatusError("Unable to reach Roundhouse backend");
+          setHaAvailable(false);
+          setTrestleAvailable(false);
+        }
+      }
+    };
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <ConfigProvider
@@ -89,6 +128,26 @@ function App() {
               <Title level={2} style={{ margin: 0 }}>
                 {SUITES.find((item) => item.key === suite)?.label}
               </Title>
+              <Space size="middle">
+                <Badge status={haAvailable ? "success" : "error"} text="HA API" />
+                <Badge status={trestleAvailable ? "success" : "error"} text="Trestle-HA" />
+              </Space>
+              {statusError && (
+                <Alert
+                  type="error"
+                  message="Backend unavailable"
+                  description={statusError}
+                  showIcon
+                />
+              )}
+              {!haAvailable && !trestleAvailable && !statusError && (
+                <Alert
+                  type="warning"
+                  message="No backends configured"
+                  description="Configure HA or Trestle-HA to enable features."
+                  showIcon
+                />
+              )}
               <Text type="secondary">Section: {section}</Text>
               {suite === "overview" && section === "control-point" ? (
                 <ControlPointApp embedded />

@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 from fastapi import FastAPI
+
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello Roundhouse!"}
+from roundhouse.api import ha_router, trestle_router
+
+
+app.include_router(ha_router)
+app.include_router(trestle_router)

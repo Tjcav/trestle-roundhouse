@@ -1,7 +1,6 @@
 import re
 import json
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from .main import claims, register_claim, app, gate_check
 from .models import Claim, ChangeScope
 from typing import List
 
@@ -11,18 +10,18 @@ importer_router = APIRouter()
 def classify_sentence(sentence: str) -> str:
     sentence = sentence.lower()
     if re.search(r"must not|is not allowed|never", sentence):
-        return "prohibitive"
+        return "prohibition"
     if re.search(r"must|only if|is responsible for|required", sentence):
-        return "normative"
+        return "requirement"
     if re.search(r"always|never changes|authoritative", sentence):
         return "invariant"
     if re.search(r"does|is|exists", sentence):
-        return "descriptive"
+        return "capability"
     if re.search(r"why|goal|purpose", sentence):
-        return "motivational"
+        return "constraint"
     if re.search(r"first|then|after", sentence):
-        return "process"
-    return "unknown"
+        return "constraint"
+    return "constraint"
 
 
 def normalize_assertion(sentence: str) -> str:
@@ -36,13 +35,13 @@ def infer_scope_types(sentence: str) -> List[str]:
     if re.search(r"api|endpoint", s):
         scopes.append("api")
     if re.search(r"ui|frontend", s):
-        scopes.append("ui")
+        scopes.append("subsystem")
     if re.search(r"backend|service", s):
         scopes.append("subsystem")
     if re.search(r"repo-wide|system", s):
         scopes.append("repo")
     if re.search(r"device|panel", s):
-        scopes.append("node")
+        scopes.append("subsystem")
     return scopes or ["repo"]
 
 
@@ -95,7 +94,7 @@ async def import_claims(file: UploadFile = File(...)):
         candidate_claims = []
         for sentence in sentences:
             kind = classify_sentence(sentence)
-            if kind not in ("normative", "prohibitive", "invariant"):
+            if kind not in ("requirement", "prohibition", "invariant", "constraint", "capability"):
                 continue
             assertion = normalize_assertion(sentence)
             scope_types = infer_scope_types(sentence)
@@ -115,11 +114,14 @@ async def import_claims(file: UploadFile = File(...)):
             )
             candidate_claims.append(claim)
 
+        # Import here to avoid circular import during app startup.
+        from . import main as backend_main
+
         imported = []
         for claim in candidate_claims:
             # Gate registration: schema, uniqueness, conflict
             try:
-                imported_claim = register_claim(claim)
+                imported_claim = backend_main.register_claim(claim)
                 imported.append(imported_claim)
             except HTTPException as e:
                 # If uniqueness fails, skip
@@ -142,7 +144,7 @@ async def import_claims(file: UploadFile = File(...)):
                 scope.subsystem = "ui"
             if "node" in st:
                 scope.subsystem = "node"
-            gate_result = gate_check(scope)
+            gate_result = backend_main.gate_check(scope)
             if hasattr(gate_result, "conflicts") and gate_result.conflicts:
                 raise HTTPException(
                     status_code=409,
@@ -153,7 +155,3 @@ async def import_claims(file: UploadFile = File(...)):
         raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Import failed: {str(e)}")
-
-
-# Register the router with the main app
-app.include_router(importer_router)

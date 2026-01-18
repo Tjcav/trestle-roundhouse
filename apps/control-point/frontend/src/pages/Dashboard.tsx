@@ -6,7 +6,7 @@ const Dashboard: React.FC = () => {
   const [selectedClaim, setSelectedClaim] = useState<any | null>(null);
 
   useEffect(() => {
-    fetch(`${window.location.protocol}//${window.location.hostname}:9200/claims`)
+    fetch(`/api/claims`)
       .then((res) => {
         if (!res.ok) {
           console.error('Fetch failed:', res.status, res.statusText);
@@ -45,6 +45,13 @@ const Dashboard: React.FC = () => {
         <CountCard label="Total claims" count={total} />
         <CountCard label="Violated claims" count={violated} />
         <CountCard label="Conflicted claims" count={conflicted} />
+      </div>
+      <div style={{ marginBottom: 24 }}>
+        <b>Public API:</b> &nbsp;
+        <a href="#" onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent('nav', { detail: 'gate' })); }}>Gate Check</a> | &nbsp;
+        <a href="#" onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent('nav', { detail: 'register' })); }}>Register Claim</a> | &nbsp;
+        <a href="#" onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent('nav', { detail: 'import' })); }}>Import Claims</a> | &nbsp;
+        <a href="#" onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent('nav', { detail: 'arbitrate' })); }}>Arbitrate</a>
       </div>
       <h2>Claims</h2>
       <pre style={{ background: '#f0f0f0', padding: 16, borderRadius: 8, marginBottom: 16 }}>

@@ -31,6 +31,12 @@ class Vocabulary(str, Enum):
     PROHIBITION = "prohibition"
 
 
+class ClaimState(str, Enum):
+    PROPOSED = "proposed"
+    ACCEPTED = "accepted"
+    DENIED = "denied"
+
+
 class Claim(BaseModel):
     claim_id: str
     title: str
@@ -41,6 +47,7 @@ class Claim(BaseModel):
     introduced_by: str
     rationale: str = Field(..., max_length=140)
     category: Vocabulary
+    state: ClaimState = ClaimState.PROPOSED
     read_only: bool = False
     source_type: Optional[str] = None
     rationale_ref: Optional[str] = None
@@ -68,13 +75,6 @@ class Claim(BaseModel):
         if v not in Vocabulary.__members__.values():
             raise ValueError("category must be a closed vocabulary")
         return v
-
-
-class ClaimState(str, Enum):
-    SATISFIED = "satisfied"
-    VIOLATED = "violated"
-    UNKNOWN = "unknown"
-    CONFLICTED = "conflicted"
 
 
 class ConflictReasonCode(str, Enum):

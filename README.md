@@ -4,12 +4,9 @@ This is the Nx monorepo for the Roundhouse project, containing both frontend (Re
 
 ## Structure
 
-- `/apps/frontend` — React (TypeScript) frontend app
-- `/apps/backend` — Python (FastAPI) backend app
-- `/libs/shared-ts` — Shared TypeScript library
-- `/libs/shared_py` — Shared Python library
-- `/docs` — Project documentation
-- `/scripts` — Utility scripts
+## Standards and Tooling
+
+Standards pin: see [.trestle/standards.version](.trestle/standards.version). Tooling reference: trestle-spec/tooling (informational).
 
 ## Getting Started
 

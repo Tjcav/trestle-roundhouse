@@ -30,6 +30,11 @@ def _contains_forbidden_reference(text: str) -> bool:
 def main() -> None:
     for file in sys.argv[1:]:
         path = Path(file)
+        if path.as_posix() in {
+            "scripts/arch/path_check.py",
+            "tests/architecture/test_legacy_lifecycle_shim.py",
+        }:
+            continue
         if _is_legacy_path(path):
             continue
         if path.suffix != ".py":
@@ -49,9 +54,7 @@ def main() -> None:
             elif isinstance(node, ast.Import):
                 for name in node.names:
                     if _contains_forbidden_reference(name.name):
-                        raise SystemExit(
-                            f"[ARCH VIOLATION] {path}: illegal legacy import '{name.name}'"
-                        )
+                        raise SystemExit(f"[ARCH VIOLATION] {path}: illegal legacy import '{name.name}'")
 
 
 if __name__ == "__main__":

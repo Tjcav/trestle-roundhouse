@@ -3,8 +3,14 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const frontendPort = Number(env.VITE_FRONTEND_PORT || 5173);
-  const backendUrl = env.VITE_BACKEND_URL || "http://localhost:8090";
+  const frontendPort = Number(env.VITE_FRONTEND_PORT);
+  if (!frontendPort) {
+    throw new Error("VITE_FRONTEND_PORT is not set");
+  }
+  const backendUrl = env.VITE_BACKEND_URL;
+  if (!backendUrl) {
+    throw new Error("VITE_BACKEND_URL is not set");
+  }
 
   return {
     plugins: [react()],

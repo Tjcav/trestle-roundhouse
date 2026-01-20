@@ -1,0 +1,12 @@
+.rootLayout {
+  min-height: 100vh;
+}
+
+.content {
+  padding: 24px;
+}
+
+.contentInner {
+  margin: 0 auto;
+  max-width: 1400px;
+}

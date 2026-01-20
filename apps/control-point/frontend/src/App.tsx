@@ -1,17 +1,6 @@
 import React from "react";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Image,
-  Input,
-  Layout,
-  Menu,
-  Row,
-  Space,
-  Typography,
-} from "antd";
+import { Badge, Button, Card, Col, Form, Image, Input, Row, Space, Typography } from "antd";
+import styles from "./App.module.css";
 
 type ReviewStatus = "idle" | "checking" | "ok" | "warning" | "error";
 
@@ -161,8 +150,7 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
     return lines.join("\n");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!text.trim()) {
       setResult("No input provided");
       setDiagnostics({ error_source: "parsing" });
@@ -217,96 +205,64 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
   const canSubmit = text.trim().length > 0 && status !== "checking";
   const diagnosticsText = formatDiagnostics(diagnostics);
   const { Title, Text } = Typography;
-  const { Content, Header, Sider } = Layout;
-
-  const suites = [
-    { key: "overview", label: "Overview" },
-    { key: "systems", label: "Systems" },
-    { key: "profiles", label: "Profiles" },
-  ];
-
-  const suiteSections: Record<string, { key: string; label: string }[]> = {
-    overview: [
-      { key: "status", label: "Status" },
-      { key: "configuration", label: "Configuration" },
-      { key: "export", label: "Export" },
-    ],
-    systems: [
-      { key: "home-assistant", label: "Home Assistant" },
-      { key: "zigbee", label: "Zigbee" },
-      { key: "matter", label: "Matter" },
-      { key: "trestle", label: "Trestle" },
-      { key: "activity", label: "Activity" },
-    ],
-    profiles: [
-      { key: "editor", label: "Editor" },
-      { key: "simulate", label: "Simulate" },
-      { key: "insights", label: "Insights" },
-    ],
-  };
-
-  const [suite, setSuite] = React.useState<string>("overview");
-  const [section, setSection] = React.useState<string>("status");
-
-  React.useEffect(() => {
-    const firstSection = suiteSections[suite]?.[0];
-    if (firstSection && !suiteSections[suite].some((item) => item.key === section)) {
-      setSection(firstSection.key);
-    }
-  }, [suite, section]);
+  const diagnosticsLines = diagnosticsText ? diagnosticsText.split("\n") : [];
+  const resultLines = result ? result.split("\n") : [];
 
   const mainContent = (
-    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+    <Space direction="vertical" size="large" className={styles.fullWidth}>
       <Space align="center" size="middle">
         <Image src={`data:image/svg+xml;utf8,${SIGNAL_SVG_DATA}`} preview={false} width={22} />
-        <Title level={2} style={{ margin: 0 }}>
-          Control Point Review
-        </Title>
+        <Title level={2}>Control Point Review</Title>
       </Space>
 
-      <Row gutter={[16, 16]} style={{ width: "100%" }}>
-        <Col xs={24} md={16} lg={16}>
+      <Row gutter={[16, 16]} className={styles.fullWidth}>
+        <Col xs={24} md={16} lg={18}>
           <Card>
-            <form onSubmit={handleSubmit}>
-              <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-                <Input.TextArea
-                  placeholder="Paste plan text here..."
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  rows={12}
-                />
+            <Form onFinish={handleSubmit} layout="vertical" className={styles.fullWidth}>
+              <Space direction="vertical" size="middle" className={styles.fullWidth}>
+                <Form.Item className={styles.fullWidth}>
+                  <Input.TextArea
+                    placeholder="Paste plan text here..."
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    rows={12}
+                  />
+                </Form.Item>
 
                 {isEditingPrompt && (
                   <Card type="inner" title="Prompt template">
-                    <Input.TextArea
-                      value={draftPrompt}
-                      onChange={(e) => setDraftPrompt(e.target.value)}
-                      rows={10}
-                    />
-                    <Space size="middle" style={{ marginTop: 8 }}>
-                      <Button
-                        type="link"
-                        onClick={() => {
-                          setPromptTemplate(draftPrompt);
-                          window.localStorage.setItem("controlPointPromptTemplate", draftPrompt);
-                          setIsEditingPrompt(false);
-                        }}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        type="link"
-                        onClick={() => {
-                          setDraftPrompt(promptTemplate);
-                          setIsEditingPrompt(false);
-                        }}
-                      >
-                        Cancel
-                      </Button>
+                    <Space direction="vertical" size="middle" className={styles.fullWidth}>
+                      <Input.TextArea
+                        value={draftPrompt}
+                        onChange={(e) => setDraftPrompt(e.target.value)}
+                        rows={10}
+                        className={styles.fullWidth}
+                      />
+                      <Space size="middle">
+                        <Button
+                          type="link"
+                          onClick={() => {
+                            setPromptTemplate(draftPrompt);
+                            window.localStorage.setItem("controlPointPromptTemplate", draftPrompt);
+                            setIsEditingPrompt(false);
+                          }}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          type="link"
+                          onClick={() => {
+                            setDraftPrompt(promptTemplate);
+                            setIsEditingPrompt(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </Space>
+                      <Text type="secondary">
+                        Include <Text code>{"{{PLAN}}"}</Text> where the submitted text should be injected.
+                      </Text>
                     </Space>
-                    <Text type="secondary" style={{ display: "block", marginTop: 8 }}>
-                      Include <code>{"{{PLAN}}"}</code> where the submitted text should be injected.
-                    </Text>
                   </Card>
                 )}
 
@@ -319,11 +275,11 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
                   </Button>
                 </Space>
               </Space>
-            </form>
+            </Form>
           </Card>
         </Col>
-        <Col xs={24} md={8} lg={8}>
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+        <Col xs={24} md={8} lg={6}>
+          <Space direction="vertical" size="middle">
             <Card>
               <Space align="center" size="small">
                 <Badge status={view.badgeStatus} />
@@ -333,29 +289,27 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
 
             {hasResult && (
               <Card>
-                <Text strong type={view.resultType} style={{ display: "block" }}>
-                  {view.resultHeadline}
-                </Text>
-                <Text style={{ display: "block", marginTop: 8, whiteSpace: "pre-wrap" }}>
-                  {result}
-                </Text>
+                <Space direction="vertical" size="small">
+                  <Text strong type={view.resultType}>
+                    {view.resultHeadline}
+                  </Text>
+                  {resultLines.map((line, index) => (
+                    <Text key={`${line}-${index}`}>{line}</Text>
+                  ))}
+                </Space>
               </Card>
             )}
 
             {hasDiagnostics && (
               <Card size="small">
-                <Text strong>Diagnostics</Text>
-                <Text
-                  type="secondary"
-                  style={{
-                    display: "block",
-                    marginTop: 8,
-                    whiteSpace: "pre-wrap",
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {diagnosticsText}
-                </Text>
+                <Space direction="vertical" size="small">
+                  <Text strong>Diagnostics</Text>
+                  {diagnosticsLines.map((line, index) => (
+                    <Text key={`${line}-${index}`} type="secondary" code>
+                      {line}
+                    </Text>
+                  ))}
+                </Space>
               </Card>
             )}
           </Space>
@@ -364,38 +318,7 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
     </Space>
   );
 
-  if (embedded) {
-    return mainContent;
-  }
-
-  return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Header style={{ background: "#141414", borderBottom: "1px solid #1f1f1f" }}>
-        <Menu
-          mode="horizontal"
-          theme="dark"
-          selectedKeys={[suite]}
-          items={suites}
-          onClick={(info) => setSuite(info.key)}
-        />
-      </Header>
-      <Layout>
-        <Sider width={220} theme="dark" style={{ borderRight: "1px solid #1f1f1f" }}>
-          <Menu
-            mode="inline"
-            theme="dark"
-            selectedKeys={[section]}
-            items={suiteSections[suite]}
-            onClick={(info) => setSection(info.key)}
-            style={{ height: "100%", borderRight: 0 }}
-          />
-        </Sider>
-        <Content style={{ maxWidth: 1200, margin: "24px auto", padding: "0 16px", width: "100%" }}>
-          {mainContent}
-        </Content>
-      </Layout>
-    </Layout>
-  );
+  return mainContent;
 }
 
 export default ControlPointApp;

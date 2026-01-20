@@ -2,11 +2,25 @@ import os
 from typing import Any, Dict, Optional
 
 import requests
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
+
+from .models import (
+    Arbitration,
+    Claim,
+    ClaimSeverity,
+    ChangeScope,
+    Conflict,
+    ConflictChoice,
+    ConflictReasonCode,
+    GateCheckResult,
+    ScopeType,
+)
 
 
 app = FastAPI()
+
+_claim_store: dict[str, Claim] = {}
 
 DEFAULT_PROMPT_TEMPLATE = (
     "You are a custodian AI.\n\n"
@@ -54,6 +68,103 @@ def extract_diagnostics(payload: Dict[str, Any]) -> Dict[str, Any]:
         "created_at": payload.get("created_at") or payload.get("created"),
     }
     return {k: v for k, v in diagnostics.items() if v is not None}
+
+
+def register_claim(claim: Claim) -> Claim:
+    if claim.claim_id in _claim_store:
+        raise HTTPException(status_code=400, detail="claim_id must be unique")
+    _claim_store[claim.claim_id] = claim
+    return claim
+
+
+def _filter_claims(scope: ChangeScope) -> list[Claim]:
+    if not any([scope.repo, scope.path, scope.subsystem, scope.api]):
+        return list(_claim_store.values())
+
+    scope_types: set[ScopeType] = set()
+    if scope.repo:
+        scope_types.add(ScopeType.REPO)
+    if scope.path:
+        scope_types.add(ScopeType.PATH)
+    if scope.subsystem:
+        scope_types.add(ScopeType.SUBSYSTEM)
+    if scope.api:
+        scope_types.add(ScopeType.API)
+
+    return [
+        claim
+        for claim in _claim_store.values()
+        if scope_types.intersection(claim.scope_types)
+    ]
+
+
+def _detect_conflicts(claims: list[Claim], scope: ChangeScope) -> list[Conflict]:
+    conflicts: list[Conflict] = []
+    by_assertion: dict[str, list[Claim]] = {}
+    for claim in claims:
+        key = claim.assertion.strip().lower()
+        by_assertion.setdefault(key, []).append(claim)
+
+    for assertion_key, grouped in by_assertion.items():
+        if len(grouped) < 2:
+            continue
+        categories = {c.category for c in grouped}
+        if len(categories) < 2:
+            continue
+        conflict_id = f"conflict-{abs(hash(assertion_key)) % (10**8)}"
+        conflicts.append(
+            Conflict(
+                conflict_id=conflict_id,
+                reason_code=ConflictReasonCode.ASSERTION_CONTRADICTION,
+                question=f"Conflicting claims detected for: {grouped[0].title}",
+                choices=[
+                    ConflictChoice(
+                        key="approve", label="Approve", effect="Accept claim"
+                    ),
+                    ConflictChoice(key="reject", label="Reject", effect="Reject claim"),
+                ],
+                claim_ids=[c.claim_id for c in grouped],
+                scope=scope,
+                introduced_by="control-point",
+            )
+        )
+    return conflicts
+
+
+def gate_check(scope: ChangeScope) -> GateCheckResult:
+    claims = _filter_claims(scope)
+    conflicts = _detect_conflicts(claims, scope)
+    blocking_claims = [c.claim_id for c in claims if c.severity == ClaimSeverity.BLOCK]
+    summary = {
+        "total": len(claims),
+        "conflicted": len(conflicts),
+        "violated": 0,
+        "unknown": 0,
+    }
+    pass_ = not conflicts and not blocking_claims
+    return GateCheckResult(
+        scope=scope,
+        summary=summary,
+        claims=claims,
+        conflicts=conflicts,
+        pass_=pass_,
+        blocking_claims=blocking_claims,
+    )
+
+
+@app.post("/claims/register", response_model=Claim)
+async def register_claim_endpoint(claim: Claim) -> Claim:
+    return register_claim(claim)
+
+
+@app.post("/gate/check", response_model=GateCheckResult)
+async def gate_check_endpoint(scope: ChangeScope) -> GateCheckResult:
+    return gate_check(scope)
+
+
+@app.post("/control-point/arbitrate")
+async def arbitrate_endpoint(arbitration: Arbitration) -> Dict[str, Any]:
+    return {"status": "accepted", "arbitration": arbitration.dict()}
 
 
 @app.post("/review")

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from core.simulator.models import SimulationCommand, SimulationResult
+
 
 @dataclass(frozen=True)
 class ValidateProfileCommand:
@@ -16,12 +18,6 @@ class ApplyProfileCommand:
 
 
 @dataclass(frozen=True)
-class SimulationCommand:
-    scenario_id: str
-    inputs: dict
-
-
-@dataclass(frozen=True)
 class ValidationResult:
     valid: bool
     violations: list[str]
@@ -33,6 +29,11 @@ class ApplyResult:
     message: str | None = None
 
 
-@dataclass(frozen=True)
-class SimulationResult:
-    outcome: dict
+__all__ = [
+    "ApplyProfileCommand",
+    "ApplyResult",
+    "SimulationCommand",
+    "SimulationResult",
+    "ValidateProfileCommand",
+    "ValidationResult",
+]

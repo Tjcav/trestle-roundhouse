@@ -1,0 +1,12 @@
+line-length = 120
+
+[lint]
+select = ["E", "F", "I", "ANN", "N", "ERA"]
+ignore = []
+
+[lint.per-file-ignores]
+"trestle-dev-tools_legacy_backend/**" = ["E", "F", "I"]
+"trestle-roundhouse-frontend_legacy/**" = ["E", "F", "I"]
+
+[format]
+quote-style = "double"

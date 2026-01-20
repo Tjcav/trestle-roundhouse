@@ -1,13 +1,11 @@
-import json
 from fastapi.testclient import TestClient
 from main import app
-from models import Claim, ChangeScope, Arbitration, ArbitrationDecision, ScopeType
 
 client = TestClient(app)
 
 
 # Table-driven test cases
-def test_claim_registration():
+def test_claim_registration() -> None:
     valid_claim = {
         "claim_id": "CP-TEST-001",
         "title": "Test claim",
@@ -38,7 +36,7 @@ def test_claim_registration():
     assert r4.status_code == 400
 
 
-def test_scope_filtering():
+def test_scope_filtering() -> None:
     scope = {"repo": "main"}
     r = client.post("/gate/check", json=scope)
     assert r.status_code == 200
@@ -60,7 +58,7 @@ def test_scope_filtering():
     ]
 
 
-def test_conflict_detection():
+def test_conflict_detection() -> None:
     scope = {"repo": "main"}
     r = client.post("/gate/check", json=scope)
     data = r.json()
@@ -73,7 +71,7 @@ def test_conflict_detection():
         assert "requires_human" in conflict
 
 
-def test_arbitration():
+def test_arbitration() -> None:
     # Use a known conflict from previous test
     scope = {"repo": "main"}
     r = client.post("/gate/check", json=scope)

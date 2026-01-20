@@ -1,0 +1,38 @@
+layers:
+  core:
+    path: core/
+    forbidden_imports:
+      - apps.backend
+      - apps.frontend
+      - simulator
+      - fastapi
+      - uvicorn
+      - os
+      - subprocess
+      - pathlib
+
+  shared:
+    path: libs/shared_py/
+    allowed_imports:
+      - core
+    forbidden_imports:
+      - apps.backend
+      - apps.frontend
+
+  backend:
+    path: apps/backend/
+    allowed_imports:
+      - core
+      - libs.shared_py
+    forbidden_imports:
+      - apps/frontend
+
+  frontend:
+    path: apps/frontend/
+    forbidden_imports:
+      - apps/backend
+      - core
+
+  legacy:
+    path: trestle-dev-tools_legacy_backend/
+    allow_any: true

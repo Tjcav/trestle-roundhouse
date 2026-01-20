@@ -4,5 +4,9 @@
             "approve": true,
             "matchCommandLine": true
         }
-    }
+    },
+    "ruff.format.preview": true,
+    "ruff.lineLength": 120,
+    "ruff.lint.preview": true,
+    "editor.defaultFormatter": "charliermarsh.ruff"
 }

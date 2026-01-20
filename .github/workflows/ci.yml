@@ -2,11 +2,43 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install architecture tooling
+        run: pip install pre-commit pytest pyyaml
+      - name: Run pre-commit
+        run: pre-commit run --all-files
+      - name: Run architecture tests
+        run: pytest tests/architecture
+  python-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install quality tools
+        run: pip install ruff mypy
+      - name: Ruff lint
+        run: ruff check core apps/backend libs/shared_py
+      - name: Mypy
+        run: mypy
   lint:
     runs-on: ubuntu-latest
     steps:

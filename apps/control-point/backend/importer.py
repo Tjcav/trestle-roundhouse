@@ -1,8 +1,9 @@
-import re
 import json
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from .models import Claim, ChangeScope, ClaimSeverity, ScopeType, Vocabulary
-from typing import List
+import re
+
+from fastapi import APIRouter, File, HTTPException, UploadFile
+
+from .models import ChangeScope, Claim, ClaimSeverity, ScopeType, Vocabulary
 
 importer_router = APIRouter()
 
@@ -29,7 +30,7 @@ def normalize_assertion(sentence: str) -> str:
     return re.sub(r"\s+", " ", sentence.strip())
 
 
-def infer_scope_types(sentence: str) -> List[ScopeType]:
+def infer_scope_types(sentence: str) -> list[ScopeType]:
     scopes: list[ScopeType] = []
     s = sentence.lower()
     if re.search(r"api|endpoint", s):
@@ -64,16 +65,17 @@ def infer_owner(sentence: str) -> str:
     return "unassigned"
 
 
-def extract_sentences(text: str) -> List[str]:
+def extract_sentences(text: str) -> list[str]:
     # Split on periods, bullets, headings
     sentences = re.split(r"[\n\r\-\*]+|\. ?", text)
     return [s.strip() for s in sentences if s.strip()]
 
 
-@importer_router.post("/claims/import", response_model=List[Claim])
-async def import_claims(file: UploadFile = File(...)):
+@importer_router.post("/claims/import", response_model=list[Claim])
+async def import_claims(file: UploadFile = File(...)) -> list[Claim]:
     """
-    Import claims from a text or JSON file, distill into atomic claims, run each through the registration gate, and mark as imported.
+    Import claims from a text or JSON file, distill into atomic claims,
+    run each through the registration gate, and mark as imported.
     Stops and emits conflicts if any arise.
     """
     try:

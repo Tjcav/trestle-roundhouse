@@ -1,3 +1,3 @@
-from .settings import load_settings, RoundhouseSettings
+from .settings import RoundhouseSettings, load_settings
 
 __all__ = ["load_settings", "RoundhouseSettings"]

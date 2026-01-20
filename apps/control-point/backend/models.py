@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from enum import Enum
-from typing import List, Optional, Literal
-from pydantic import BaseModel, Field, validator
+from typing import List, Literal, Optional
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class ClaimSeverity(str, Enum):
@@ -52,28 +54,25 @@ class Claim(BaseModel):
     source_type: Optional[str] = None
     rationale_ref: Optional[str] = None
 
-    @validator("claim_id")
-    def id_must_be_stable(cls, v):
+    @field_validator("claim_id")
+    @classmethod
+    def id_must_be_stable(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("claim_id must be non-empty")
         return v
 
-    @validator("owner")
-    def owner_must_be_present(cls, v):
+    @field_validator("owner")
+    @classmethod
+    def owner_must_be_present(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("owner must be present")
         return v
 
-    @validator("scope_types")
-    def scope_types_must_not_be_empty(cls, v):
+    @field_validator("scope_types")
+    @classmethod
+    def scope_types_must_not_be_empty(cls, v: List[ScopeType]) -> List[ScopeType]:
         if not v:
             raise ValueError("scope_types must not be empty")
-        return v
-
-    @validator("category")
-    def category_must_be_closed(cls, v):
-        if v not in Vocabulary.__members__.values():
-            raise ValueError("category must be a closed vocabulary")
         return v
 
 
@@ -133,14 +132,6 @@ class GateCheckResult(BaseModel):
     pass_: bool
     blocking_claims: List[str]
 
-    class Config:
-        extra = "forbid"
-        fields = {
-            "contract_version": {"order": 0},
-            "scope": {"order": 1},
-            "summary": {"order": 2},
-            "claims": {"order": 3},
-            "conflicts": {"order": 4},
-            "pass_": {"order": 5},
-            "blocking_claims": {"order": 6},
-        }
+    model_config = {
+        "extra": "forbid",
+    }

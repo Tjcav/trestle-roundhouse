@@ -37,4 +37,3 @@ curl -s https://api.openai.com/v1/responses \
     input: $prompt
   }')" \
 | jq -r '.output[0].content[0].text'| sed 's/^RED FLAGS:/\x1b[31mRED FLAGS:\x1b[0m/'
-

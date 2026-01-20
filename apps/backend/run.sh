@@ -23,6 +23,8 @@ fi
 
 cd "$SCRIPT_DIR"
 
+export PYTHONPATH="${ROOT_DIR}:${PYTHONPATH:-}"
+
 exec python -m uvicorn main:app \
   --host "$ROUNDHOUSE_BACKEND_HOST" \
   --port "$ROUNDHOUSE_BACKEND_PORT"

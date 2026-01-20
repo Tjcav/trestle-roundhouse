@@ -11,7 +11,6 @@ from roundhouse.trestle_bridge.contracts import (
 )
 from roundhouse.trestle_bridge.interfaces import TrestleExecutor
 
-
 router = APIRouter(prefix="/api/trestle", tags=["trestle"])
 
 

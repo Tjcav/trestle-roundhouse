@@ -8,7 +8,6 @@ from roundhouse.api.deps import get_environment_service, get_status_service
 from roundhouse.services.environment import EnvironmentService
 from roundhouse.services.status import StatusService
 
-
 router = APIRouter(prefix="/api/ha", tags=["ha"])
 
 

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
-
 from .interfaces import HAReadClient
 from .models import HAEntity, HAState
+
+type JsonValue = dict[str, Any] | list[Any] | str | int | float | bool | None
 
 
 class HAClient(HAReadClient):
@@ -17,20 +18,24 @@ class HAClient(HAReadClient):
     def _headers(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._token}"}
 
-    async def get_json(self, path: str) -> Any:
+    async def get_json(self, path: str) -> JsonValue:
         url = f"{self._base_url}{path}"
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.get(url, headers=self._headers())
             response.raise_for_status()
-            return response.json()
+            return cast(JsonValue, response.json())
 
-    async def get_config(self) -> Any:
+    async def get_config(self) -> JsonValue:
         return await self.get_json("/api/config")
 
     async def get_states(self) -> dict[str, HAState]:
         raw_states = await self.get_json("/api/states")
         states: dict[str, HAState] = {}
-        for item in raw_states or []:
+        if not isinstance(raw_states, list):
+            return states
+        for item in raw_states:
+            if not isinstance(item, dict):
+                continue
             entity_id = item.get("entity_id")
             if not entity_id:
                 continue
@@ -50,8 +55,8 @@ class HAClient(HAReadClient):
             entities.append(HAEntity(entity_id=entity_id, domain=domain, name=name))
         return entities
 
-    async def get_services(self) -> Any:
+    async def get_services(self) -> JsonValue:
         return await self.get_json("/api/services")
 
-    async def get_devices(self) -> Any:
+    async def get_devices(self) -> JsonValue:
         return await self.get_json("/api/device_registry")

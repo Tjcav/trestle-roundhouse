@@ -138,4 +138,3 @@ Success is evaluated by:
 ## Need Professional Help in Developing Your Architecture?
 
 Please contact me at https://sammuti.com :)
-

@@ -1,8 +1,8 @@
-import sys
 import argparse
-import requests
 import json
-import os
+import sys
+
+import requests
 
 CONTRACT_VERSION = 1
 EXIT_CODES = {
@@ -13,7 +13,7 @@ EXIT_CODES = {
 }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Control Point CLI Gate Check")
     parser.add_argument("--repo", type=str, default=None)
     parser.add_argument("--path", type=str, default=None)
@@ -25,16 +25,12 @@ def main():
     parser.add_argument("--arbitrate", action="store_true")
     args = parser.parse_args()
 
-    scope = {
-        k: v
-        for k, v in vars(args).items()
-        if k in ("repo", "path", "subsystem", "api") and v
-    }
+    scope = {k: v for k, v in vars(args).items() if k in ("repo", "path", "subsystem", "api") and v}
     if not scope:
         print("ERROR: At least one scope argument is required.", file=sys.stderr)
         sys.exit(EXIT_CODES["hard_reject"])
 
-    def run_gate():
+    def run_gate() -> dict:
         payload = json.dumps(scope)
         headers = {"Content-Type": "application/json"}
         r = requests.post(args.url, data=payload, headers=headers)
@@ -66,15 +62,11 @@ def main():
             print(f"\nConflict {conflict['conflict_id']}:")
             print(f"Question: {conflict['question']}")
             for idx, choice in enumerate(conflict["choices"]):
-                print(
-                    f"  [{choice['key'].upper()}] {choice['label']} - {choice['effect']}"
-                )
+                print(f"  [{choice['key'].upper()}] {choice['label']} - {choice['effect']}")
             user_choice = None
             valid_keys = [c["key"] for c in conflict["choices"]]
             while user_choice not in valid_keys:
-                user_choice = (
-                    input(f"Enter choice ({'/'.join(valid_keys)}): ").strip().lower()
-                )
+                user_choice = input(f"Enter choice ({'/'.join(valid_keys)}): ").strip().lower()
             # Submit arbitration
             arbitration = {
                 "conflict_id": conflict["conflict_id"],

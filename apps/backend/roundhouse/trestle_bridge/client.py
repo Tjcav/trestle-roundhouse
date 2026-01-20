@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from typing import Any, cast
 
 import httpx
 
@@ -26,12 +27,12 @@ class TrestleBridgeClient(TrestleExecutor):
             return {}
         return {"Authorization": f"Bearer {self._token}"}
 
-    async def _post(self, path: str, payload: dict) -> dict:
+    async def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         url = f"{self._base_url}{path}"
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.post(url, headers=self._headers(), json=payload)
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
 
     async def validate_profile(self, cmd: ValidateProfileCommand) -> ValidationResult:
         payload = {"profile_id": cmd.profile_id, "profile_payload": cmd.profile_payload}

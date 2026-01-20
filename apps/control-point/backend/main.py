@@ -2,21 +2,20 @@ import os
 from typing import Any, Dict, Optional
 
 import requests
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from .models import (
     Arbitration,
+    ChangeScope,
     Claim,
     ClaimSeverity,
-    ChangeScope,
     Conflict,
     ConflictChoice,
     ConflictReasonCode,
     GateCheckResult,
     ScopeType,
 )
-
 
 app = FastAPI()
 

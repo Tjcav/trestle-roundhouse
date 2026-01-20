@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: architecture-import-check
+        name: Architecture Import Check
+        entry: python scripts/arch/import_check.py
+        language: system
+        types: [python]
+
+      - id: architecture-path-check
+        name: Architecture Path Check
+        entry: python scripts/arch/path_check.py
+        language: system
+        types: [python]
+
+      - id: frontend-import-check
+        name: Frontend Architecture Check
+        entry: node scripts/arch/frontend_import_check.js
+        language: system
+        files: ^apps/frontend/
+
+      - id: shared-ts-import-check
+        name: Shared TS Architecture Check
+        entry: node scripts/arch/shared_ts_import_check.js
+        language: system
+        files: ^libs/shared-ts/

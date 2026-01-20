@@ -1,106 +1,565 @@
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
-- [ ] Verify that the copilot-instructions.md file in the .github directory is created.
+# Copilot Agent Instructions — Roundhouse / Trestle Architecture
 
-- [ ] Clarify Project Requirements
-	<!-- Ask for project type, language, and frameworks if not specified. Skip if already provided. -->
+## 0. Prime Directive (Non-Negotiable)
 
-- [ ] Scaffold the Project
-	<!--
-	Ensure that the previous step has been marked as completed.
-	Call project setup tool with projectType parameter.
-	Run scaffolding command to create project files and folders.
-	Use '.' as the working directory.
-	If no appropriate projectType is available, search documentation using available tools.
-	Otherwise, create the project structure manually using available file creation tools.
-	-->
+**This repository follows a strict layered architecture.
+You MUST preserve and enforce it.**
 
-- [ ] Customize the Project
-	<!--
-	Verify that all previous steps have been completed successfully and you have marked the step as completed.
-	Develop a plan to modify codebase according to user requirements.
-	Apply modifications using appropriate tools and user-provided references.
-	Skip this step for "Hello World" projects.
-	-->
+If a request would violate these rules, **STOP** and explain the violation instead of implementing it.
 
-- [ ] Install Required Extensions
-	<!-- ONLY install extensions provided mentioned in the get_project_setup_info. Skip this step otherwise and mark as completed. -->
+Do not “helpfully” blur boundaries.
 
-- [ ] Compile the Project
-	<!--
-	Verify that all previous steps have been completed.
-	Install any missing dependencies.
-	Run diagnostics and resolve any issues.
-	Check for markdown files in project folder for relevant instructions on how to do this.
-	-->
+---
 
-- [ ] Create and Run Task
-	<!--
-	Verify that all previous steps have been completed.
-	Check https://code.visualstudio.com/docs/debugtest/tasks to determine if the project needs a task. If so, use the create_and_run_task to create and launch a task based on package.json, README.md, and project structure.
-	Skip this step otherwise.
-	 -->
+## 1. Architectural Layers (Authoritative)
 
-- [ ] Launch the Project
-	<!--
-	Verify that all previous steps have been completed.
-	Prompt user for debug mode, launch only if confirmed.
-	 -->
+### 1.1 Core (Architecture Truth Layer)
 
-- [ ] Ensure Documentation is Complete
-	<!--
-	Verify that all previous steps have been completed.
-	Verify that README.md and the copilot-instructions.md file in the .github directory exists and contains current project information.
-	Clean up the copilot-instructions.md file in the .github directory by removing all HTML comments.
-	 -->
+**Purpose:**
+Defines *what things are*, never *how they run*.
 
-<!--
-## Execution Guidelines
-PROGRESS TRACKING:
-- If any tools are available to manage the above todo list, use it to track progress through this checklist.
-- After completing each step, mark it complete and add a summary.
-- Read current todo list status before starting each new step.
+**Characteristics:**
 
-COMMUNICATION RULES:
-- Avoid verbose explanations or printing full command outputs.
-- If a step is skipped, state that briefly (e.g. "No extensions needed").
-- Do not explain project structure unless asked.
-- Keep explanations concise and focused.
+* No FastAPI
+* No React
+* No filesystem access
+* No subprocesses
+* No simulators
+* No HA specifics
+* No environment assumptions
 
-DEVELOPMENT RULES:
-- Use '.' as the working directory unless user specifies otherwise.
-- Avoid adding media or external links unless explicitly requested.
-- Use placeholders only with a note that they should be replaced.
-- Use VS Code API tool only for VS Code extension projects.
-- Once the project is created, it is already opened in Visual Studio Code—do not suggest commands to open this project in Visual Studio again.
-- If the project setup information has additional rules, follow them strictly.
+**Allowed contents:**
 
-FOLDER CREATION RULES:
-- Always use the current directory as the project root.
-- If you are running any terminal commands, use the '.' argument to ensure that the current working directory is used ALWAYS.
-- Do not create a new folder unless the user explicitly requests it besides a .vscode folder for a tasks.json file.
-- If any of the scaffolding commands mention that the folder name is not correct, let the user know to create a new folder with the correct name and then reopen it again in vscode.
+* Data models
+* Schemas
+* Enums
+* Lifecycle state machines (pure logic)
+* Validation rules
+* Invariants
 
-EXTENSION INSTALLATION RULES:
-- Only install extension specified by the get_project_setup_info tool. DO NOT INSTALL any other extensions.
+**Examples:**
 
-PROJECT CONTENT RULES:
-- If the user has not specified project details, assume they want a "Hello World" project as a starting point.
-- Avoid adding links of any type (URLs, files, folders, etc.) or integrations that are not explicitly required.
-- Avoid generating images, videos, or any other media files unless explicitly requested.
-- If you need to use any media assets as placeholders, let the user know that these are placeholders and should be replaced with the actual assets later.
-- Ensure all generated components serve a clear purpose within the user's requested workflow.
-- If a feature is assumed but not confirmed, prompt the user for clarification before including it.
-- If you are working on a VS Code extension, use the VS Code API tool with a query to find relevant VS Code API references and samples related to that query.
+* Node
+* Node lifecycle states
+* Capability descriptors
+* Artifact metadata
+* Registry interfaces (no IO)
 
-TASK COMPLETION RULES:
-- Your task is complete when:
-  - Project is successfully scaffolded and compiled without errors
-  - copilot-instructions.md file in the .github directory exists in the project
-  - README.md file exists and is up to date
-  - User is provided with clear instructions to debug/launch the project
+**Rules:**
 
-Before starting a new task in the above plan, update progress in the plan.
--->
-- Work through each checklist item systematically.
-- Keep communication concise and focused.
-- Follow development best practices.
+* Core MUST NOT import from any app
+* Core MUST be deterministic and side-effect free
+
+If asked to add logic here that:
+
+* opens files
+* starts processes
+* mounts routes
+* renders UI
+
+→ **Refuse and redirect to an app layer**
+
+---
+
+### 1.2 Applications (Opinionated Runtimes)
+
+Applications *use* the core.
+They do not redefine it.
+
+#### Backend App (FastAPI)
+
+**Owns:**
+
+* HTTP routes
+* Persistence
+* Process execution
+* Simulator orchestration
+* HA integration
+* Artifact storage
+
+**May import:**
+
+* core
+* shared_py
+
+**Must NOT:**
+
+* Redefine core schemas
+* Add lifecycle states not in core
+* Embed frontend assumptions
+
+---
+
+#### Frontend App (Vite / React)
+
+**Owns:**
+
+* Rendering
+* UX
+* Routing
+* UI composition
+
+**May import:**
+
+* shared-ts
+* API-derived schemas
+
+**Must NOT:**
+
+* Invent backend lifecycle semantics
+* Manage node lifecycle directly
+* Assume simulator or process behavior
+
+---
+
+#### Control-Point App
+
+**Owns:**
+
+* Enforcement
+* Validation
+* Policy checks
+
+**Uses:**
+
+* core contracts
+
+---
+
+### 1.3 Shared Libraries
+
+**Purpose:**
+Cross-app reuse only.
+
+**Rules:**
+
+* May depend on core
+* May NOT depend on applications
+* No side effects at import time
+
+---
+
+### 1.4 Legacy Code
+
+**Status:**
+Read-only reference.
+
+**Rules:**
+
+* DO NOT import legacy code
+* DO NOT extend legacy modules
+* DO NOT mirror legacy structure unless explicitly instructed
+
+---
+
+## 2. Dependency Rules (Hard Gates)
+
+### Allowed Imports
+
+| From ↓        | Can Import →         |
+| ------------- | -------------------- |
+| core          | nothing app-specific |
+| shared        | core                 |
+| backend       | core, shared         |
+| frontend      | shared               |
+| control-point | core, shared         |
+
+### Forbidden Imports (Always Errors)
+
+* core → backend
+* core → frontend
+* core → simulator
+* frontend → backend internals
+* shared → applications
+* any → legacy (unless explicitly requested)
+
+If an import would violate this matrix → **STOP**
+
+---
+
+## 3. Node / Panel / Simulator Rules
+
+### Canonical Rule
+
+> **If code answers “what is a node?” → core**
+> **If code answers “how do we run it?” → backend**
+> **If code answers “how it looks?” → frontend**
+
+---
+
+### Node Model Rules
+
+* There MUST be exactly **one canonical Node schema**
+* Lifecycle states MUST live in core
+* Backend may persist node state but not redefine it
+* Frontend may display node state but not invent it
+
+---
+
+### Simulator Rules
+
+* Simulator lifecycle is an **implementation detail**
+* Simulator states map to core lifecycle states
+* Simulator code MUST NOT define new lifecycle meanings
+* Simulator UI is optional, not authoritative
+
+---
+
+## 4. WASM / LVGL / Panel Rules
+
+* LVGL WASM is treated as a **frontend execution target**
+* Backend hosts artifacts; frontend executes them
+* Backend does NOT interpret UI state
+* Frontend does NOT own lifecycle truth
+
+If asked to:
+
+* mix LVGL rendering logic into backend
+* treat WASM as a backend process
+
+→ **Stop and clarify architecture**
+
+---
+
+## 5. API Design Rules
+
+* APIs reflect core models
+* APIs do not invent new states or semantics
+* CRUD routes operate on canonical core entities
+* Lifecycle transitions must be validated against core rules
+
+---
+
+## 6. Copilot Behavior Constraints
+
+When implementing:
+
+* Prefer **small, explicit modules**
+* Reject “convenient shortcuts” that cross layers
+* Ask for clarification if placement is ambiguous
+* Never duplicate schemas across layers
+* Never silently add lifecycle states or flags
+
+---
+
+## 7. Mandatory Self-Check (Before Writing Code)
+
+Before emitting code, answer internally:
+
+1. Which layer does this belong to?
+2. Does it introduce side effects?
+3. Does it redefine a core concept?
+4. Does it cross a forbidden dependency boundary?
+
+If any answer is unclear → **STOP**
+
+---
+
+## 8. Failure Mode Override
+
+If user instructions conflict with these rules:
+
+* State the conflict explicitly
+* Propose a compliant alternative
+* Do NOT “just implement it anyway”
+
+---
+
+## 9. Summary Rule (Memory Anchor)
+
+> **Core defines truth**
+> **Apps enact truth**
+> **Shared reuse truth**
+> **Legacy is history**
+
+---
+
+# Architecture Enforcement: Pre-commit, Import Lint, and Tests
+
+This document defines **mechanical enforcement** of the Roundhouse / Trestle architecture.
+
+These rules exist to prevent silent erosion of the system boundaries.
+
+---
+
+## 1. Pre-commit Enforcement (Mandatory)
+
+### 1.1 Pre-commit Framework
+
+**Tool:** `pre-commit`
+**Status:** Required for all contributors
+
+Create or update `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+	- repo: https://github.com/pre-commit/pre-commit-hooks
+		rev: v4.6.0
+		hooks:
+			- id: check-yaml
+			- id: check-json
+			- id: end-of-file-fixer
+			- id: trailing-whitespace
+
+	- repo: local
+		hooks:
+			- id: architecture-import-check
+				name: Architecture Import Check
+				entry: python scripts/arch/import_check.py
+				language: system
+				types: [python]
+
+			- id: architecture-path-check
+				name: Architecture Path Check
+				entry: python scripts/arch/path_check.py
+				language: system
+				types: [python]
+
+			- id: frontend-import-check
+				name: Frontend Architecture Check
+				entry: node scripts/arch/frontend_import_check.js
+				language: system
+				files: ^apps/frontend/
+```
+
+---
+
+### 1.2 What Pre-commit Must Enforce
+
+#### Python (Backend / Shared / Core)
+
+* ❌ `core` importing from any app
+* ❌ `shared` importing from apps
+* ❌ any non-legacy importing from `legacy_*`
+* ❌ backend importing frontend code
+* ❌ duplicate schema definitions across layers
+
+Violations **fail commit immediately**.
+
+---
+
+## 2. Import Linting (Hard Rules)
+
+### 2.1 Python Import Rules
+
+Create `scripts/arch/import_rules.yaml`:
+
+```yaml
+layers:
+	core:
+		path: core/
+		forbidden_imports:
+			- apps.backend
+			- apps.frontend
+			- simulator
+			- fastapi
+			- uvicorn
+			- os
+			- subprocess
+
+	shared:
+		path: libs/shared_py/
+		allowed_imports:
+			- core
+		forbidden_imports:
+			- apps.backend
+			- apps.frontend
+
+	backend:
+		path: apps/backend/
+		allowed_imports:
+			- core
+			- libs.shared_py
+		forbidden_imports:
+			- apps/frontend
+
+	frontend:
+		path: apps/frontend/
+		forbidden_imports:
+			- apps/backend
+			- core
+
+	legacy:
+		path: trestle-dev-tools_legacy_backend/
+		allow_any: true
+```
+
+---
+
+### 2.2 Python Import Check Script
+
+Create `scripts/arch/import_check.py`:
+
+```python
+import ast
+import sys
+from pathlib import Path
+import yaml
+
+rules = yaml.safe_load(open("scripts/arch/import_rules.yaml"))
+
+def detect_layer(path: Path):
+		for layer, rule in rules["layers"].items():
+				if path.as_posix().startswith(rule["path"]):
+						return layer, rule
+		return None, None
+
+def main():
+		for file in sys.argv[1:]:
+				path = Path(file)
+				layer, rule = detect_layer(path)
+				if not rule or rule.get("allow_any"):
+						continue
+
+				tree = ast.parse(path.read_text())
+				for node in ast.walk(tree):
+						if isinstance(node, ast.Import):
+								for n in node.names:
+										check_import(path, n.name, rule)
+						elif isinstance(node, ast.ImportFrom):
+								check_import(path, node.module, rule)
+
+def check_import(path, module, rule):
+		if not module:
+				return
+		for forbidden in rule.get("forbidden_imports", []):
+				if module.startswith(forbidden):
+						raise SystemExit(
+								f"[ARCH VIOLATION] {path}: illegal import '{module}'"
+						)
+
+if __name__ == "__main__":
+		main()
+```
+
+---
+
+## 3. Frontend Import Enforcement (React / TS)
+
+### 3.1 Frontend Rules
+
+* ❌ frontend importing backend internals
+* ❌ frontend defining lifecycle semantics
+* ❌ frontend bypassing API contracts
+
+Only API clients and shared-ts allowed.
+
+---
+
+### 3.2 Frontend Import Check Script
+
+Create `scripts/arch/frontend_import_check.js`:
+
+```js
+import fs from "fs";
+
+const forbidden = [
+	"apps/backend",
+	"core/",
+];
+
+const files = process.argv.slice(2);
+
+for (const file of files) {
+	const content = fs.readFileSync(file, "utf8");
+	for (const bad of forbidden) {
+		if (content.includes(bad)) {
+			console.error(
+				`[ARCH VIOLATION] ${file} imports forbidden module: ${bad}`
+			);
+			process.exit(1);
+		}
+	}
+}
+```
+
+---
+
+## 4. Automated Architecture Tests (CI-Level)
+
+These are **tests**, not lint. They assert architectural invariants.
+
+---
+
+### 4.1 Python Architecture Tests (pytest)
+
+Create `tests/architecture/test_layers.py`:
+
+```python
+from pathlib import Path
+
+FORBIDDEN = {
+		"core": ["apps", "simulator", "fastapi"],
+		"shared_py": ["apps"],
+}
+
+def test_no_forbidden_imports():
+		for layer, banned in FORBIDDEN.items():
+				for py in Path(layer).rglob("*.py"):
+						text = py.read_text()
+						for b in banned:
+								assert f"import {b}" not in text, f"{py} imports {b}"
+```
+
+---
+
+### 4.2 Schema Singularity Test
+
+Guarantees **no duplicate models**.
+
+```python
+def test_single_node_schema():
+		matches = list(Path(".").rglob("Node*.py"))
+		assert len(matches) == 1, f"Multiple Node schemas found: {matches}"
+```
+
+---
+
+### 4.3 Lifecycle State Lock Test
+
+```python
+from core.lifecycle import LifecycleState
+
+def test_lifecycle_states_are_frozen():
+		expected = {
+				"STOPPED",
+				"STARTING",
+				"RUNNING",
+				"ERROR",
+		}
+		assert set(LifecycleState.__members__) == expected
+```
+
+---
+
+## 5. CI Enforcement (Required)
+
+### 5.1 CI Must Run
+
+* `pre-commit run --all-files`
+* `pytest tests/architecture`
+* frontend lint (ESLint / custom check)
+
+Any failure blocks merge.
+
+---
+
+## 6. Copilot-Specific Enforcement Clause
+
+**Copilot MUST assume:**
+
+* Architecture tests will be added
+* Import lint will run
+* Violations are not acceptable shortcuts
+
+Copilot must:
+
+* Choose correct layer before writing code
+* Refuse to generate code that would fail these checks
+
+---
+
+## 7. Final Guardrail (Authoritative)
+
+> **If it cannot pass pre-commit, it does not belong in the repo.**
+> **If it violates architecture tests, it is a bug, not a feature.**

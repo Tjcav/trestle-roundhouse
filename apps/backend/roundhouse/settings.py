@@ -10,6 +10,9 @@ class RoundhouseSettings:
     ha_token: str | None
     trestle_ha_url: str | None
     trestle_ha_token: str | None
+    panel_release_token: str | None
+    panel_install_dir: str | None
+    panel_desktop_executable: str | None
 
 
 def load_settings() -> RoundhouseSettings:
@@ -18,4 +21,7 @@ def load_settings() -> RoundhouseSettings:
         ha_token=os.getenv("ROUNDHOUSE_HA_TOKEN"),
         trestle_ha_url=os.getenv("ROUNDHOUSE_TRESTLE_HA_URL"),
         trestle_ha_token=os.getenv("ROUNDHOUSE_TRESTLE_HA_TOKEN"),
+        panel_release_token=os.getenv("ROUNDHOUSE_PANEL_RELEASE_TOKEN"),
+        panel_install_dir=os.getenv("ROUNDHOUSE_PANEL_INSTALL_DIR"),
+        panel_desktop_executable=os.getenv("ROUNDHOUSE_PANEL_DESKTOP_EXECUTABLE"),
     )

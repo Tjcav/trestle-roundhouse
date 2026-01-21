@@ -44,11 +44,11 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install quality tools
-        run: pip install ruff mypy
+        run: pip install ruff pyright
       - name: Ruff lint
         run: ruff check core apps/backend libs/shared_py
-      - name: Mypy
-        run: mypy
+      - name: Pyright
+        run: pyright
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -59,10 +59,10 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
-      - name: Lint JS/TS
-        run: npx eslint .
-      - name: Check formatting
-        run: npx prettier --check .
+      - name: Biome check
+        run: npx biome check .
+      - name: TypeScript type check
+        run: npx tsc -p tsconfig.base.json --noEmit
   test-frontend:
     runs-on: ubuntu-latest
     steps:

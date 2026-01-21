@@ -8,7 +8,7 @@
         "scripts/arch/shared_ts_import_check.js": "d81c279d14de9b5ae2239997af632aed258be839f792a09e9968412abccafde3",
         "ruff.toml": "4cf9f7aa1882b391884c92a6f5f5fb78f38f9d6a78b0ab6731c61d1a14b8c7ae",
         "mypy.ini": "b3a344610826c8d928928311c80be115416f0cfa736e773d4d00c9b8e0977711",
-        ".github/workflows/ci.yml": "3952959d415b7e8cefe9d5f4513fe4c5f3dcdf2dcbbb61895074689394d9cd39",
+        ".github/workflows/ci.yml": "2463d3b53dcd1d563a4a98c4598ba9d2e4f113b6d100468ea7a1934a4af24e92",
         ".github/copilot-instructions.md": "84225df3feeb967dd4fcf38e431ba0c02170c177cce38d09ecaaa9172452879a"
     }
 }

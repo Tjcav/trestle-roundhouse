@@ -1,3 +1,5 @@
+exclude: ^(build/|dist/|generated/|node_modules/|\.nx/)
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -7,6 +9,30 @@ repos:
         exclude: ^(apps/control-point/frontend/requirements_allocation\.generated\.json|\.nx/)
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff-format
+      - id: ruff
+
+  - repo: https://github.com/pre-commit/mirrors-pyright
+    rev: v1.1.392
+    hooks:
+      - id: pyright
+
+  - repo: https://github.com/biomejs/pre-commit
+    rev: v0.6.1
+    hooks:
+      - id: biome-check
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.15.0
+    hooks:
+      - id: markdownlint-cli2
+        args: ['--config', '.markdownlint.json']
+        exclude: ^(build/|dist/|generated/|node_modules/|\.nx/)
 
   - repo: local
     hooks:

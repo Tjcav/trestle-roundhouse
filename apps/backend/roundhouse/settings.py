@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
+from dotenv import load_dotenv
+
 
 @dataclass
 class RoundhouseSettings:
@@ -16,6 +18,8 @@ class RoundhouseSettings:
 
 
 def load_settings() -> RoundhouseSettings:
+    # Load .env if present (for local dev)
+    load_dotenv()
     return RoundhouseSettings(
         ha_url=os.getenv("ROUNDHOUSE_HA_URL"),
         ha_token=os.getenv("ROUNDHOUSE_HA_TOKEN"),

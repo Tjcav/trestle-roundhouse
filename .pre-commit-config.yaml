@@ -28,6 +28,7 @@ repos:
           - httpx
           - requests
           - pyyaml
+          - python-dotenv
 
   - repo: https://github.com/biomejs/pre-commit
     rev: v0.6.1
@@ -67,3 +68,9 @@ repos:
         entry: node scripts/arch/shared_ts_import_check.js
         language: system
         files: ^libs/shared-ts/
+
+      - id: ui-composition-check
+        name: UI Composition Check
+        entry: node scripts/arch/ui_composition_check.js
+        language: system
+        files: ^apps/frontend/src/

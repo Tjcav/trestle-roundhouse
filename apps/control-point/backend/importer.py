@@ -1,5 +1,6 @@
 import json
 import re
+from typing import cast
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -84,9 +85,8 @@ async def import_claims(file: UploadFile = File(...)) -> list[Claim]:
         try:
             data = json.loads(content.decode("utf-8"))
             if isinstance(data, list):
-                sentences = [
-                    str(s) if s is not None else "" for s in data if isinstance(s, (str, int, float, bool, type(None)))
-                ]
+                items = cast(list[object], data)
+                sentences = [str(item) for item in items if isinstance(item, (str, int, float, bool, type(None)))]
             elif isinstance(data, str):
                 sentences = extract_sentences(data)
             else:

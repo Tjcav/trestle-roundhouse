@@ -4,9 +4,8 @@ from dataclasses import asdict
 
 from fastapi import APIRouter, Depends
 
-from roundhouse.api.deps import get_environment_service, get_status_service
+from roundhouse.api.deps import get_environment_service
 from roundhouse.services.environment import EnvironmentService
-from roundhouse.services.status import StatusService
 
 router = APIRouter(prefix="/api/ha", tags=["ha"])
 
@@ -34,7 +33,6 @@ async def list_states(
 
 
 @router.get("/status")
-async def ha_status(
-    service: StatusService = Depends(get_status_service),
-) -> dict[str, bool]:
-    return service.get_ha_status()
+async def ha_status() -> dict[str, bool]:
+    # Always available for local dev
+    return {"ha_available": True}

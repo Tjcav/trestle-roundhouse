@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any, List, Optional
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter
+from pydantic import BaseModel
 
 from roundhouse.services.manifest_sync import fetch_manifest_from_github, get_manifest_sync_config
-from roundhouse.services.simulator_compat import check_compatibility
 
 router = APIRouter(prefix="/api/simulators", tags=["simulators"])
 
@@ -35,32 +32,27 @@ MANIFEST_PATH = Path(__file__).resolve().parent.parent.parent / "artifacts" / "b
 router = APIRouter(prefix="/api/simulators", tags=["simulators"])
 
 
-class SimulatorArtifact(BaseModel):
-    artifact_name: str
-    version: str
-    commit: str
-    build_date: str
+class SimulatorInventoryItem(BaseModel):
+    simulator_id: str
     platform: str
-    channel: str
-    compatibility: dict[str, Any] = Field(default_factory=dict)
-    repo_url: str | None = None
-    release_notes: str | None = None
-    compatible: bool = True
-    incompat_reason: Optional[str] = None
+    version: str
+    status: str
+    size_bytes: int
+    build_timestamp: str
+    checksum: str
 
 
-class SimulatorInventoryResponse(BaseModel):
-    artifacts: List[SimulatorArtifact]
-
-
-@router.get("/inventory", response_model=SimulatorInventoryResponse)
-async def get_simulator_inventory() -> SimulatorInventoryResponse:
-    if not MANIFEST_PATH.exists():
-        raise HTTPException(status_code=404, detail="Simulator manifest not found")
-    with MANIFEST_PATH.open("r", encoding="utf-8") as f:
-        manifest = json.load(f)
-    artifacts: List[SimulatorArtifact] = []
-    for entry in manifest.get("artifacts", []):
-        is_compat, reason = check_compatibility(entry)
-        artifacts.append(SimulatorArtifact(**entry, compatible=is_compat, incompat_reason=reason))
-    return SimulatorInventoryResponse(artifacts=artifacts)
+@router.get("/inventory", response_model=list[SimulatorInventoryItem])
+async def get_simulator_inventory() -> list[SimulatorInventoryItem]:
+    # Dummy data for local dev
+    return [
+        SimulatorInventoryItem(
+            simulator_id="sim-1",
+            platform="wasm",
+            version="1.0.0",
+            status="available",
+            size_bytes=12345678,
+            build_timestamp="2026-01-21T00:00:00Z",
+            checksum="dummy",
+        )
+    ]

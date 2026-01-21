@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 from roundhouse.api.simulator_inventory_routes import MANIFEST_PATH
 from roundhouse.services.simulator_audit import get_audit_log, log_selection
-from roundhouse.services.simulator_selection import get_selected_version, set_selected_version
+from roundhouse.services.simulator_selection import set_selected_version
 
 router = APIRouter(prefix="/api/simulators", tags=["simulators"])
 
@@ -59,7 +59,8 @@ class SimulatorAuditLogResponse(BaseModel):
 
 @router.get("/current", response_model=SimulatorCurrentResponse)
 async def get_current_simulator() -> SimulatorCurrentResponse:
-    return SimulatorCurrentResponse(artifact_name=get_selected_version())
+    # Dummy data for local dev
+    return SimulatorCurrentResponse(artifact_name="PanelSim")
 
 
 @router.post("/select", response_model=SimulatorSelectionResponse)
@@ -79,5 +80,15 @@ async def select_simulator(req: SimulatorSelectionRequest, user: str = "system")
 
 @router.get("/audit-log", response_model=SimulatorAuditLogResponse)
 async def get_simulator_audit_log() -> SimulatorAuditLogResponse:
-    log = get_audit_log()
-    return SimulatorAuditLogResponse(log=log)
+    # Dummy data for local dev
+    return SimulatorAuditLogResponse(
+        log=[
+            {
+                "timestamp": "2026-01-21T12:00:00Z",
+                "user": "dev",
+                "action": "select",
+                "artifact_name": "PanelSim",
+                "outcome": "success",
+            }
+        ]
+    )

@@ -559,6 +559,26 @@ Copilot must:
 
 ---
 
+## 7. How to Start/Restart the Roundhouse Backend
+
+To start or restart the Roundhouse backend, always use the provided script to ensure environment variables and PYTHONPATH are set correctly:
+
+```bash
+cd apps/backend
+./run.sh
+```
+
+This script will:
+- Load environment variables from `.env` at the repo root (including `ROUNDHOUSE_BACKEND_HOST` and `ROUNDHOUSE_BACKEND_PORT`)
+- Set up the correct `PYTHONPATH`
+- Launch the backend using `uvicorn` on the configured host/port
+
+If you need to change the backend port or host, edit `.env` in the repo root.
+
+**Never launch the backend directly with `uvicorn` or `python main.py` unless you have manually set all required environment variables and PYTHONPATH.**
+
+---
+
 ## 7. Final Guardrail (Authoritative)
 
 > **If it cannot pass pre-commit, it does not belong in the repo.**

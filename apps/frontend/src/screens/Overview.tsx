@@ -1,7 +1,6 @@
-import { Typography } from "antd";
-
-const { Title } = Typography;
+import PageHeader from "../components/PageHeader";
+import ScreenLayout from "../components/ScreenLayout";
 
 export default function Overview() {
-  return <Title level={2}>Overview</Title>;
+  return <ScreenLayout header={<PageHeader title="Overview" />} />;
 }

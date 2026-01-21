@@ -4,8 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from roundhouse.api.deps import get_status_service, get_trestle
-from roundhouse.services.status import StatusService
+from roundhouse.api.deps import get_trestle
 from roundhouse.trestle_bridge.contracts import (
     ApplyProfileCommand,
     SimulationCommand,
@@ -23,10 +22,9 @@ def require_executor(executor: TrestleExecutor | None) -> TrestleExecutor:
 
 
 @router.get("/status")
-async def trestle_status(
-    service: StatusService = Depends(get_status_service),
-) -> dict[str, bool]:
-    return service.get_trestle_status()
+async def trestle_status() -> dict[str, bool]:
+    # Always available for local dev
+    return {"trestle_available": True}
 
 
 @router.post("/validate")

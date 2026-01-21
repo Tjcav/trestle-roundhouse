@@ -1,8 +1,9 @@
 import { Alert, Card, Space, Spin, Typography } from "antd";
 import { useEffect, useState } from "react";
-import styles from "./Environments.module.css";
+import PageHeader from "../components/PageHeader";
+import ScreenLayout from "../components/ScreenLayout";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 type HAStatus = {
   ha_available: boolean;
@@ -57,48 +58,48 @@ export default function Environments() {
     };
   }, []);
 
+  const header = <PageHeader title="Environments" />;
+  const primary = (
+    <Card title="Home Assistant">
+      {ha?.ha_available ? (
+        <Space direction="vertical" size="small">
+          <Text type="success">Connected</Text>
+          {haEntities !== null && <Text type="secondary">{haEntities} entities discovered</Text>}
+          <Text type="secondary">Enables system discovery, environment snapshots, and read-only inspection.</Text>
+        </Space>
+      ) : (
+        <Space direction="vertical" size="small">
+          <Text type="danger">Not configured</Text>
+          <Text type="secondary">Configure HA to enable system discovery and runtime tools.</Text>
+          <Text type="secondary">Enables system discovery, environment snapshots, and read-only inspection.</Text>
+        </Space>
+      )}
+    </Card>
+  );
+  const secondary = (
+    <Card title="Trestle-HA">
+      {trestle?.trestle_available ? (
+        <Space direction="vertical" size="small">
+          <Text type="success">Connected</Text>
+          <Text type="secondary">Enables validation, simulation, and apply workflows.</Text>
+        </Space>
+      ) : (
+        <Space direction="vertical" size="small">
+          <Text type="danger">Not configured</Text>
+          <Text type="secondary">Trestle-HA is required for validation, simulation, and apply.</Text>
+          <Text type="secondary">Enables validation, simulation, and apply workflows.</Text>
+        </Space>
+      )}
+    </Card>
+  );
+
   if (error) {
-    return <Alert type="error" message={error} showIcon />;
+    return <ScreenLayout header={header} alert={<Alert type="error" message={error} showIcon />} />;
   }
 
   if (!ha || !trestle) {
-    return <Spin />;
+    return <ScreenLayout header={header} primary={<Spin />} />;
   }
 
-  return (
-    <Space direction="vertical" size="large" className={styles.fullWidth}>
-      <Title level={2}>Environments</Title>
-
-      <Card title="Home Assistant">
-        {ha.ha_available ? (
-          <Space direction="vertical" size="small">
-            <Text type="success">Connected</Text>
-            {haEntities !== null && <Text type="secondary">{haEntities} entities discovered</Text>}
-            <Text type="secondary">Enables system discovery, environment snapshots, and read-only inspection.</Text>
-          </Space>
-        ) : (
-          <Space direction="vertical" size="small">
-            <Text type="danger">Not configured</Text>
-            <Text type="secondary">Configure HA to enable system discovery and runtime tools.</Text>
-            <Text type="secondary">Enables system discovery, environment snapshots, and read-only inspection.</Text>
-          </Space>
-        )}
-      </Card>
-
-      <Card title="Trestle-HA">
-        {trestle.trestle_available ? (
-          <Space direction="vertical" size="small">
-            <Text type="success">Connected</Text>
-            <Text type="secondary">Enables validation, simulation, and apply workflows.</Text>
-          </Space>
-        ) : (
-          <Space direction="vertical" size="small">
-            <Text type="danger">Not configured</Text>
-            <Text type="secondary">Trestle-HA is required for validation, simulation, and apply.</Text>
-            <Text type="secondary">Enables validation, simulation, and apply workflows.</Text>
-          </Space>
-        )}
-      </Card>
-    </Space>
-  );
+  return <ScreenLayout header={header} primary={primary} secondary={secondary} />;
 }

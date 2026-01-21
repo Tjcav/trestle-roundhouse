@@ -4,7 +4,7 @@
     "core",
     "apps/backend",
     "libs/shared_py",
-    "apps/control-point",
+    "apps/control-point"
   ],
   "exclude": [
     "trestle-dev-tools_legacy_backend",
@@ -14,5 +14,5 @@
     "build",
     "generated",
     ".nx"
-  ],
+  ]
 }

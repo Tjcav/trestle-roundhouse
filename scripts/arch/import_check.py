@@ -1,23 +1,35 @@
 import ast
 import sys
 from pathlib import Path
+from typing import TypedDict, cast
 
 import yaml
 
 RULES_PATH = Path("scripts/arch/import_rules.yaml")
 
 
-rules = yaml.safe_load(RULES_PATH.read_text(encoding="utf-8"))
+class LayerRule(TypedDict, total=False):
+    path: str
+    forbidden_imports: list[str]
+    allow_any: bool
 
 
-def detect_layer(path: Path) -> tuple[str | None, dict | None]:
+class RulesConfig(TypedDict):
+    layers: dict[str, LayerRule]
+
+
+rules = cast(RulesConfig, yaml.safe_load(RULES_PATH.read_text(encoding="utf-8")))
+
+
+def detect_layer(path: Path) -> tuple[str | None, LayerRule | None]:
     for layer, rule in rules["layers"].items():
-        if path.as_posix().startswith(rule["path"]):
+        rule_path = rule.get("path")
+        if rule_path and path.as_posix().startswith(rule_path):
             return layer, rule
     return None, None
 
 
-def check_import(path: Path, module: str | None, rule: dict) -> None:
+def check_import(path: Path, module: str | None, rule: LayerRule) -> None:
     if not module:
         return
     for forbidden in rule.get("forbidden_imports", []):
@@ -28,7 +40,7 @@ def check_import(path: Path, module: str | None, rule: dict) -> None:
 def main() -> None:
     for file in sys.argv[1:]:
         path = Path(file)
-        layer, rule = detect_layer(path)
+        _layer, rule = detect_layer(path)
         if not rule or rule.get("allow_any"):
             continue
 

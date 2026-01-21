@@ -274,7 +274,7 @@ If user instructions conflict with these rules:
 
 ---
 
-# Architecture Enforcement: Pre-commit, Import Lint, and Tests
+## Architecture Enforcement: Pre-commit, Import Lint, and Tests
 
 This document defines **mechanical enforcement** of the Roundhouse / Trestle architecture.
 

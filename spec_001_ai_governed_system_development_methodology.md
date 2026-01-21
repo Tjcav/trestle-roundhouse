@@ -6,13 +6,14 @@ This specification defines a methodology for designing, evolving, and governing 
 
 The core challenge addressed by this document is not the design of a single product, but the **formal management of intent, structure, interfaces, implementation, and verification** across multiple abstraction layers—while allowing rapid iteration and heavy AI participation without loss of coherence, traceability, or correctness.
 
-This document intentionally focuses on *how systems are designed and evolved*, not on the final architecture of any particular product.
+This document intentionally focuses on _how systems are designed and evolved_, not on the final architecture of any particular product.
 
 ---
 
 ## Requirements
 
 ### Must Have
+
 - A clear separation of concerns between requirements, architecture, interfaces, implementation, and verification
 - Explicit governance rules defining what AI is allowed to change at each layer
 - Traceability from high-level intent down to concrete artifacts
@@ -20,17 +21,20 @@ This document intentionally focuses on *how systems are designed and evolved*, n
 - Ability to evolve requirements and architecture without destabilizing implementations
 
 ### Should Have
+
 - AI-assisted conflict detection and resolution at all layers
 - Version-controlled, text-backed representations of formal artifacts
 - Developer-facing tooling that integrates requirements, architecture, and interfaces
 - Intent-based testing tied directly to requirements
 
 ### Could Have
+
 - User-facing configuration tooling built on the same underlying methodology
 - Visual interfaces layered on top of formal models
 - Automated proposal generation for architecture and interfaces
 
 ### Won’t Have (Initially)
+
 - Fully autonomous AI decision-making without human arbitration
 - Monolithic, rigid specification of all signals and data fields
 
@@ -86,6 +90,7 @@ AI operates as a governed collaborator, not an autonomous authority.
 ### Nodes as a Universal Concept
 
 All participants in the ecosystem are modeled as nodes, including:
+
 - Physical devices
 - Software services
 - Adapters / integrations
@@ -128,6 +133,7 @@ This specification does not mandate specific tools, libraries, or platforms. Too
 ## Gathering Results
 
 Success is evaluated by:
+
 - Ability to evolve requirements without destabilizing the system
 - Clear traceability across all layers
 - Reduction in architectural drift
@@ -137,4 +143,4 @@ Success is evaluated by:
 
 ## Need Professional Help in Developing Your Architecture?
 
-Please contact me at https://sammuti.com :)
+Please contact me at [https://sammuti.com](https://sammuti.com) :)

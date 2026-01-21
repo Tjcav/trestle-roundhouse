@@ -1,3 +1,5 @@
+# Copilot Agent Instructions — Roundhouse / Trestle Architecture
+
 Below is a **ready-to-paste Copilot Agent Instructions document** designed to **keep the architecture straight and enforce it mechanically**.
 It is explicit, restrictive, and bias-correcting by design.
 
@@ -8,8 +10,6 @@ You can place this in something like:
 - or your existing Copilot rules file
 
 ---
-
-# Copilot Agent Instructions — Roundhouse / Trestle Architecture
 
 ## 0. Prime Directive (Non-Negotiable)
 

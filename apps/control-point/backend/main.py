@@ -90,11 +90,7 @@ def _filter_claims(scope: ChangeScope) -> list[Claim]:
     if scope.api:
         scope_types.add(ScopeType.API)
 
-    return [
-        claim
-        for claim in _claim_store.values()
-        if scope_types.intersection(claim.scope_types)
-    ]
+    return [claim for claim in _claim_store.values() if scope_types.intersection(claim.scope_types)]
 
 
 def _detect_conflicts(claims: list[Claim], scope: ChangeScope) -> list[Conflict]:
@@ -117,9 +113,7 @@ def _detect_conflicts(claims: list[Claim], scope: ChangeScope) -> list[Conflict]
                 reason_code=ConflictReasonCode.ASSERTION_CONTRADICTION,
                 question=f"Conflicting claims detected for: {grouped[0].title}",
                 choices=[
-                    ConflictChoice(
-                        key="approve", label="Approve", effect="Accept claim"
-                    ),
+                    ConflictChoice(key="approve", label="Approve", effect="Accept claim"),
                     ConflictChoice(key="reject", label="Reject", effect="Reject claim"),
                 ],
                 claim_ids=[c.claim_id for c in grouped],

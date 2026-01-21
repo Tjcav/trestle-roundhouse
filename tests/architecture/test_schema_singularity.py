@@ -15,6 +15,4 @@ def test_single_node_schema() -> None:
         names = _class_names(py)
         if "NodeType" in names or "NodeResponse" in names:
             matches.append(py)
-    assert matches == [Path("core/nodes/models.py")], (
-        f"Multiple Node schemas found: {matches}"
-    )
+    assert matches == [Path("core/nodes/models.py")], f"Multiple Node schemas found: {matches}"

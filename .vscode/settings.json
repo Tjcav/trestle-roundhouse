@@ -1,12 +1,12 @@
 {
-    "chat.tools.terminal.autoApprove": {
-        "/^fuser -k 9200/tcp \\|\\| true && cd /workspaces/trestle-roundhouse/apps/control-point/backend && uvicorn main:app --reload --host 0\\.0\\.0\\.0 --port 9200 &$/": {
-            "approve": true,
-            "matchCommandLine": true
-        }
-    },
-    "ruff.format.preview": true,
-    "ruff.lineLength": 120,
-    "ruff.lint.preview": true,
-    "editor.defaultFormatter": "charliermarsh.ruff"
+  "chat.tools.terminal.autoApprove": {
+    "/^fuser -k 9200/tcp \\|\\| true && cd /workspaces/trestle-roundhouse/apps/control-point/backend && uvicorn main:app --reload --host 0\\.0\\.0\\.0 --port 9200 &$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  },
+  "ruff.format.preview": true,
+  "ruff.lineLength": 120,
+  "ruff.lint.preview": true,
+  "editor.defaultFormatter": "charliermarsh.ruff"
 }

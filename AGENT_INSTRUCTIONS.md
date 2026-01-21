@@ -298,7 +298,7 @@ No hand-waving, no “best effort”.
 
 ---
 
-# Architecture Enforcement: Pre-commit, Import Lint, and Tests
+## Architecture Enforcement: Pre-commit, Import Lint, and Tests
 
 This document defines **mechanical enforcement** of the Roundhouse / Trestle architecture.
 
@@ -475,17 +475,19 @@ Only API clients and shared-ts allowed.
 Create `scripts/arch/frontend_import_check.js`:
 
 ```js
-import fs from 'fs';
+import fs from "fs";
 
-const forbidden = ['apps/backend', 'core/'];
+const forbidden = ["apps/backend", "core/"];
 
 const files = process.argv.slice(2);
 
 for (const file of files) {
-  const content = fs.readFileSync(file, 'utf8');
+  const content = fs.readFileSync(file, "utf8");
   for (const bad of forbidden) {
     if (content.includes(bad)) {
-      console.error(`[ARCH VIOLATION] ${file} imports forbidden module: ${bad}`);
+      console.error(
+        `[ARCH VIOLATION] ${file} imports forbidden module: ${bad}`,
+      );
       process.exit(1);
     }
   }

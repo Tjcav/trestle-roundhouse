@@ -1,21 +1,17 @@
 {
-    "typeCheckingMode": "standard",
-    "include": [
-        "core",
-        "apps/backend",
-        "libs/shared_py"
-    ],
-    "exclude": [
-        "trestle-dev-tools_legacy_backend",
-        "trestle-roundhouse-frontend_legacy",
-        "node_modules",
-        "dist",
-        "build",
-        "generated",
-        ".nx"
-    ],
-    "diagnosticSeverityOverrides": {
-        "reportMissingImports": "none",
-        "reportMissingModuleSource": "none"
-    }
+  "typeCheckingMode": "standard",
+  "include": ["core", "apps/backend", "libs/shared_py"],
+  "exclude": [
+    "trestle-dev-tools_legacy_backend",
+    "trestle-roundhouse-frontend_legacy",
+    "node_modules",
+    "dist",
+    "build",
+    "generated",
+    ".nx"
+  ],
+  "diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none"
+  }
 }

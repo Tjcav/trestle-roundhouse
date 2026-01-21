@@ -9,9 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@shared-ts/*": [
-        "libs/shared-ts/*"
-      ]
+      "@shared-ts/*": ["libs/shared-ts/*"]
     }
   }
 }

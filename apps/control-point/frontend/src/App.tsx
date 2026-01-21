@@ -1,5 +1,5 @@
-import React from "react";
 import { Badge, Button, Card, Col, Form, Image, Input, Row, Space, Typography } from "antd";
+import React from "react";
 import styles from "./App.module.css";
 
 type ReviewStatus = "idle" | "checking" | "ok" | "warning" | "error";
@@ -25,7 +25,7 @@ export type ControlPointAppProps = {
 };
 
 const SIGNAL_SVG_DATA = encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img"><rect x="11" y="6" width="2" height="12" fill="#ffffff"/><circle cx="12" cy="6" r="4" fill="#ffffff"/><circle cx="12" cy="18" r="4" fill="#ffffff"/></svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img"><rect x="11" y="6" width="2" height="12" fill="#ffffff"/><circle cx="12" cy="6" r="4" fill="#ffffff"/><circle cx="12" cy="18" r="4" fill="#ffffff"/></svg>',
 );
 
 const DEFAULT_PROMPT_TEMPLATE = `You are a custodian AI.
@@ -293,8 +293,8 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
                   <Text strong type={view.resultType}>
                     {view.resultHeadline}
                   </Text>
-                  {resultLines.map((line, index) => (
-                    <Text key={`${line}-${index}`}>{line}</Text>
+                  {resultLines.map((line) => (
+                    <Text key={`${view.resultHeadline}-${line}`}>{line}</Text>
                   ))}
                 </Space>
               </Card>
@@ -304,8 +304,8 @@ function ControlPointApp({ embedded = false }: ControlPointAppProps) {
               <Card size="small">
                 <Space direction="vertical" size="small">
                   <Text strong>Diagnostics</Text>
-                  {diagnosticsLines.map((line, index) => (
-                    <Text key={`${line}-${index}`} type="secondary" code>
+                  {diagnosticsLines.map((line) => (
+                    <Text key={`diagnostic-${line}`} type="secondary" code>
                       {line}
                     </Text>
                   ))}

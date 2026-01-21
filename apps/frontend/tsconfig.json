@@ -4,8 +4,5 @@
     "jsx": "react-jsx",
     "outDir": "dist"
   },
-  "include": [
-    "src",
-    "../control-point/frontend/src"
-  ]
+  "include": ["src", "../control-point/frontend/src"]
 }

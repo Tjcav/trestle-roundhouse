@@ -1,17 +1,27 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "formatter": {
-        "enabled": true,
-        "indentStyle": "space",
-        "lineWidth": 120
-    },
-    "organizeImports": {
-        "enabled": true
-    },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "recommended": true
-        }
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "lineWidth": 120
+  },
+  "files": {
+    "ignore": [
+      "apps/control-point/frontend/requirements_allocation.generated.json",
+      "node_modules",
+      "dist",
+      "build",
+      "generated",
+      ".nx"
+    ]
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
     }
+  }
 }

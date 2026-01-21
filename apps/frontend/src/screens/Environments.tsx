@@ -23,15 +23,10 @@ export default function Environments() {
 
     const load = async () => {
       try {
-        const [haRes, trestleRes] = await Promise.all([
-          fetch("/api/ha/status"),
-          fetch("/api/trestle/status"),
-        ]);
+        const [haRes, trestleRes] = await Promise.all([fetch("/api/ha/status"), fetch("/api/trestle/status")]);
 
         const haData = haRes.ok ? await haRes.json() : { ha_available: false };
-        const trestleData = trestleRes.ok
-          ? await trestleRes.json()
-          : { trestle_available: false };
+        const trestleData = trestleRes.ok ? await trestleRes.json() : { trestle_available: false };
 
         if (!cancelled) {
           setHa(haData);
@@ -43,9 +38,7 @@ export default function Environments() {
           const entitiesRes = await fetch("/api/ha/entities");
           if (entitiesRes.ok) {
             const entitiesData = await entitiesRes.json();
-            const count = Array.isArray(entitiesData.entities)
-              ? entitiesData.entities.length
-              : 0;
+            const count = Array.isArray(entitiesData.entities) ? entitiesData.entities.length : 0;
             if (!cancelled) {
               setHaEntities(count);
             }
@@ -80,22 +73,14 @@ export default function Environments() {
         {ha.ha_available ? (
           <Space direction="vertical" size="small">
             <Text type="success">Connected</Text>
-            {haEntities !== null && (
-              <Text type="secondary">{haEntities} entities discovered</Text>
-            )}
-            <Text type="secondary">
-              Enables system discovery, environment snapshots, and read-only inspection.
-            </Text>
+            {haEntities !== null && <Text type="secondary">{haEntities} entities discovered</Text>}
+            <Text type="secondary">Enables system discovery, environment snapshots, and read-only inspection.</Text>
           </Space>
         ) : (
           <Space direction="vertical" size="small">
             <Text type="danger">Not configured</Text>
-            <Text type="secondary">
-              Configure HA to enable system discovery and runtime tools.
-            </Text>
-            <Text type="secondary">
-              Enables system discovery, environment snapshots, and read-only inspection.
-            </Text>
+            <Text type="secondary">Configure HA to enable system discovery and runtime tools.</Text>
+            <Text type="secondary">Enables system discovery, environment snapshots, and read-only inspection.</Text>
           </Space>
         )}
       </Card>
@@ -109,9 +94,7 @@ export default function Environments() {
         ) : (
           <Space direction="vertical" size="small">
             <Text type="danger">Not configured</Text>
-            <Text type="secondary">
-              Trestle-HA is required for validation, simulation, and apply.
-            </Text>
+            <Text type="secondary">Trestle-HA is required for validation, simulation, and apply.</Text>
             <Text type="secondary">Enables validation, simulation, and apply workflows.</Text>
           </Space>
         )}

@@ -1,14 +1,14 @@
 {
-    "files": {
-        ".pre-commit-config.yaml": "ebe1b8bbd557f6f3e22f1d6a23b717f3316bbef3df049c7a0860ea859de67ae7",
-        "scripts/arch/import_rules.yaml": "0eff15d3651b8d49a3756c4696953005a809334167f74fdf5eee6555de12c0de",
-        "scripts/arch/import_check.py": "1e97fa1e066df4e9121f7cfd3a79e800448f971c3a733e8b89b06c83316a456e",
-        "scripts/arch/path_check.py": "4b4141ffc7baa4813e7f5e713e44edb38a1d984a2ea78d4c1994e6389dc6bb78",
-        "scripts/arch/frontend_import_check.js": "6f22b842e659b6ef5ed3d93207689a3fc8410206df451bd1027d6c3c66bbcaf2",
-        "scripts/arch/shared_ts_import_check.js": "d81c279d14de9b5ae2239997af632aed258be839f792a09e9968412abccafde3",
-        "ruff.toml": "4cf9f7aa1882b391884c92a6f5f5fb78f38f9d6a78b0ab6731c61d1a14b8c7ae",
-        "mypy.ini": "b3a344610826c8d928928311c80be115416f0cfa736e773d4d00c9b8e0977711",
-        ".github/workflows/ci.yml": "2463d3b53dcd1d563a4a98c4598ba9d2e4f113b6d100468ea7a1934a4af24e92",
-        ".github/copilot-instructions.md": "84225df3feeb967dd4fcf38e431ba0c02170c177cce38d09ecaaa9172452879a"
-    }
+  "files": {
+    ".pre-commit-config.yaml": "ebe1b8bbd557f6f3e22f1d6a23b717f3316bbef3df049c7a0860ea859de67ae7",
+    "scripts/arch/import_rules.yaml": "0eff15d3651b8d49a3756c4696953005a809334167f74fdf5eee6555de12c0de",
+    "scripts/arch/import_check.py": "1e97fa1e066df4e9121f7cfd3a79e800448f971c3a733e8b89b06c83316a456e",
+    "scripts/arch/path_check.py": "4b4141ffc7baa4813e7f5e713e44edb38a1d984a2ea78d4c1994e6389dc6bb78",
+    "scripts/arch/frontend_import_check.js": "6f22b842e659b6ef5ed3d93207689a3fc8410206df451bd1027d6c3c66bbcaf2",
+    "scripts/arch/shared_ts_import_check.js": "d81c279d14de9b5ae2239997af632aed258be839f792a09e9968412abccafde3",
+    "ruff.toml": "4cf9f7aa1882b391884c92a6f5f5fb78f38f9d6a78b0ab6731c61d1a14b8c7ae",
+    "mypy.ini": "b3a344610826c8d928928311c80be115416f0cfa736e773d4d00c9b8e0977711",
+    ".github/workflows/ci.yml": "2463d3b53dcd1d563a4a98c4598ba9d2e4f113b6d100468ea7a1934a4af24e92",
+    ".github/copilot-instructions.md": "84225df3feeb967dd4fcf38e431ba0c02170c177cce38d09ecaaa9172452879a"
+  }
 }

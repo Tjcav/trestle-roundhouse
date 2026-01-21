@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
 import { Badge, Button, ConfigProvider, Flex, Layout, Menu, Select, Space, Typography, theme } from "antd";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import styles from "./AppShell.module.css";
 import ControlPoint from "./screens/ControlPoint";
 import Environments from "./screens/Environments";
 import Overview from "./screens/Overview";
 import Placeholder from "./screens/Placeholder";
-import styles from "./AppShell.module.css";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -21,14 +21,9 @@ export default function AppShell() {
 
     const loadStatus = async () => {
       try {
-        const [haRes, trestleRes] = await Promise.all([
-          fetch("/api/ha/status"),
-          fetch("/api/trestle/status"),
-        ]);
+        const [haRes, trestleRes] = await Promise.all([fetch("/api/ha/status"), fetch("/api/trestle/status")]);
         const haData = haRes.ok ? await haRes.json() : { ha_available: false };
-        const trestleData = trestleRes.ok
-          ? await trestleRes.json()
-          : { trestle_available: false };
+        const trestleData = trestleRes.ok ? await trestleRes.json() : { trestle_available: false };
 
         if (!cancelled) {
           setHaAvailable(Boolean(haData.ha_available));

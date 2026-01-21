@@ -21,18 +21,25 @@ repos:
     rev: v1.1.392
     hooks:
       - id: pyright
+        args: ["--project", "pyrightconfig.json"]
+        additional_dependencies:
+          - fastapi
+          - pydantic
+          - httpx
+          - requests
+          - pyyaml
 
   - repo: https://github.com/biomejs/pre-commit
     rev: v0.6.1
     hooks:
       - id: biome-check
-        additional_dependencies: ['@biomejs/biome@1.9.4']
+        additional_dependencies: ["@biomejs/biome@1.9.4"]
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.15.0
     hooks:
       - id: markdownlint-cli2
-        args: ['--config', '.markdownlint.json']
+        args: ["--config", ".markdownlint.json"]
         exclude: ^(build/|dist/|generated/|node_modules/|\.nx/)
 
   - repo: local

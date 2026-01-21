@@ -2,7 +2,7 @@ line-length = 120
 
 [lint]
 select = ["E", "F", "I", "ANN", "N", "ERA"]
-ignore = []
+ignore = ["ANN101", "ANN102", "ANN401"]
 
 [lint.per-file-ignores]
 "trestle-dev-tools_legacy_backend/**" = ["E", "F", "I"]

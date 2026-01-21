@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -14,10 +15,10 @@ class HAEntity:
 class HAState:
     entity_id: str
     state: str
-    attributes: dict
+    attributes: dict[str, Any]
 
 
 @dataclass(frozen=True)
 class HAEvent:
     event_type: str
-    data: dict
+    data: dict[str, Any]

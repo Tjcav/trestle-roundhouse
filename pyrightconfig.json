@@ -1,6 +1,11 @@
 {
-  "typeCheckingMode": "standard",
-  "include": ["core", "apps/backend", "libs/shared_py"],
+  "typeCheckingMode": "strict",
+  "include": [
+    "core",
+    "apps/backend",
+    "libs/shared_py",
+    "apps/control-point",
+  ],
   "exclude": [
     "trestle-dev-tools_legacy_backend",
     "trestle-roundhouse-frontend_legacy",
@@ -10,8 +15,4 @@
     "generated",
     ".nx"
   ],
-  "diagnosticSeverityOverrides": {
-    "reportMissingImports": "none",
-    "reportMissingModuleSource": "none"
-  }
 }

@@ -36,13 +36,21 @@ class HAClient(HAReadClient):
         for item in raw_states:
             if not isinstance(item, dict):
                 continue
-            entity_id = item.get("entity_id")
-            if not entity_id:
+            item_data = cast(dict[str, Any], item)
+            entity_id = item_data.get("entity_id")
+            if not isinstance(entity_id, str) or not entity_id:
                 continue
+            state_raw = item_data.get("state")
+            state = state_raw if isinstance(state_raw, str) else ""
+            attributes_raw = item_data.get("attributes")
+            if isinstance(attributes_raw, dict):
+                attributes = cast(dict[str, Any], attributes_raw)
+            else:
+                attributes = {}
             states[entity_id] = HAState(
                 entity_id=entity_id,
-                state=item.get("state", ""),
-                attributes=item.get("attributes", {}) or {},
+                state=state,
+                attributes=attributes,
             )
         return states
 
@@ -51,7 +59,9 @@ class HAClient(HAReadClient):
         entities: list[HAEntity] = []
         for entity_id, state in states.items():
             domain = entity_id.split(".", 1)[0] if "." in entity_id else "unknown"
-            name = state.attributes.get("friendly_name") if isinstance(state.attributes, dict) else None
+            name = state.attributes.get("friendly_name")
+            if not isinstance(name, str):
+                name = None
             entities.append(HAEntity(entity_id=entity_id, domain=domain, name=name))
         return entities
 

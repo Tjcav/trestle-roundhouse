@@ -102,7 +102,7 @@ class Conflict(BaseModel):
 class GateResult(BaseModel):
     contract_version: Literal[1] = 1
     scope: ChangeScope
-    summary: dict
+    summary: dict[str, object]
     claims: List[Claim]
     conflicts: List[Conflict]
     pass_: bool
@@ -126,7 +126,7 @@ class Arbitration(BaseModel):
 class GateCheckResult(BaseModel):
     contract_version: Literal[1] = 1
     scope: ChangeScope
-    summary: dict
+    summary: dict[str, object]
     claims: List[Claim]
     conflicts: List["Conflict"]
     pass_: bool

@@ -58,7 +58,7 @@ def extract_text(payload: Dict[str, Any]) -> str:
 
 
 def extract_diagnostics(payload: Dict[str, Any]) -> Dict[str, Any]:
-    usage = payload.get("usage") or {}
+    usage: dict[str, Any] = payload.get("usage") or {}
     diagnostics: Dict[str, Any] = {
         "model": payload.get("model"),
         "total_tokens": usage.get("total_tokens"),
@@ -129,15 +129,17 @@ def gate_check(scope: ChangeScope) -> GateCheckResult:
     conflicts = _detect_conflicts(claims, scope)
     blocking_claims = [c.claim_id for c in claims if c.severity == ClaimSeverity.BLOCK]
     summary = {
-        "total": len(claims),
-        "conflicted": len(conflicts),
-        "violated": 0,
-        "unknown": 0,
+        "total": int(len(claims)),
+        "conflicted": int(len(conflicts)),
+        "violated": int(0),
+        "unknown": int(0),
     }
+    # Cast values to object to satisfy type checker
+    summary_obj: dict[str, object] = {k: v for k, v in summary.items()}
     pass_ = not conflicts and not blocking_claims
     return GateCheckResult(
         scope=scope,
-        summary=summary,
+        summary=summary_obj,
         claims=claims,
         conflicts=conflicts,
         pass_=pass_,
@@ -157,7 +159,7 @@ async def gate_check_endpoint(scope: ChangeScope) -> GateCheckResult:
 
 @app.post("/control-point/arbitrate")
 async def arbitrate_endpoint(arbitration: Arbitration) -> Dict[str, Any]:
-    return {"status": "accepted", "arbitration": arbitration.dict()}
+    return {"status": "accepted", "arbitration": arbitration.model_dump()}
 
 
 @app.post("/review")

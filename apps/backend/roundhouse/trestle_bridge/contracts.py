@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from core.simulator.models import SimulationCommand, SimulationResult
 
@@ -8,13 +9,13 @@ from core.simulator.models import SimulationCommand, SimulationResult
 @dataclass(frozen=True)
 class ValidateProfileCommand:
     profile_id: str
-    profile_payload: dict
+    profile_payload: dict[str, Any]
 
 
 @dataclass(frozen=True)
 class ApplyProfileCommand:
     profile_id: str
-    bindings: dict
+    bindings: dict[str, Any]
 
 
 @dataclass(frozen=True)

@@ -10,6 +10,14 @@ from core.lifecycle.models import NodeLifecycleState
 from core.nodes.models import NodeResponse, NodeType
 
 
+def _default_capabilities() -> list[str]:
+    return []
+
+
+def _default_metadata() -> dict[str, Any]:
+    return {}
+
+
 @dataclass
 class NodeRecord:
     """Core node record."""
@@ -17,9 +25,9 @@ class NodeRecord:
     node_id: str
     node_type: NodeType
     lifecycle_state: NodeLifecycleState = NodeLifecycleState.CREATED
-    capabilities: list[str] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=_default_capabilities)
     artifact_ref: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=_default_metadata)
     last_updated: datetime = field(default_factory=datetime.now)
 
     def to_response(self) -> NodeResponse:

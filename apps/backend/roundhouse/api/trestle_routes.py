@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from roundhouse.api.deps import get_status_service, get_trestle
@@ -23,7 +25,7 @@ def require_executor(executor: TrestleExecutor | None) -> TrestleExecutor:
 @router.get("/status")
 async def trestle_status(
     service: StatusService = Depends(get_status_service),
-) -> dict:
+) -> dict[str, bool]:
     return service.get_trestle_status()
 
 
@@ -31,7 +33,7 @@ async def trestle_status(
 async def validate_profile(
     cmd: ValidateProfileCommand,
     executor: TrestleExecutor | None = Depends(get_trestle),
-) -> dict:
+) -> dict[str, Any]:
     executor = require_executor(executor)
     result = await executor.validate_profile(cmd)
     return {"valid": result.valid, "violations": result.violations}
@@ -41,7 +43,7 @@ async def validate_profile(
 async def apply_profile(
     cmd: ApplyProfileCommand,
     executor: TrestleExecutor | None = Depends(get_trestle),
-) -> dict:
+) -> dict[str, Any]:
     executor = require_executor(executor)
     result = await executor.apply_profile(cmd)
     return {"status": result.status, "message": result.message}
@@ -51,7 +53,7 @@ async def apply_profile(
 async def simulate(
     cmd: SimulationCommand,
     executor: TrestleExecutor | None = Depends(get_trestle),
-) -> dict:
+) -> dict[str, Any]:
     executor = require_executor(executor)
     result = await executor.simulate(cmd)
     return {"outcome": result.outcome}

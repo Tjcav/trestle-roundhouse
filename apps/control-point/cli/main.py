@@ -30,7 +30,9 @@ def main() -> None:
         print("ERROR: At least one scope argument is required.", file=sys.stderr)
         sys.exit(EXIT_CODES["hard_reject"])
 
-    def run_gate() -> dict:
+    from typing import Any
+
+    def run_gate() -> dict[str, Any]:
         payload = json.dumps(scope)
         headers = {"Content-Type": "application/json"}
         r = requests.post(args.url, data=payload, headers=headers)
@@ -61,7 +63,7 @@ def main() -> None:
         for conflict in result["conflicts"]:
             print(f"\nConflict {conflict['conflict_id']}:")
             print(f"Question: {conflict['question']}")
-            for idx, choice in enumerate(conflict["choices"]):
+            for choice in conflict["choices"]:
                 print(f"  [{choice['key'].upper()}] {choice['label']} - {choice['effect']}")
             user_choice = None
             valid_keys = [c["key"] for c in conflict["choices"]]

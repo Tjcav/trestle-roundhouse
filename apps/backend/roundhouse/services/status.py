@@ -9,8 +9,8 @@ class StatusService:
         self._ha = ha
         self._trestle = trestle
 
-    def get_ha_status(self) -> dict:
+    def get_ha_status(self) -> dict[str, bool]:
         return {"ha_available": self._ha is not None}
 
-    def get_trestle_status(self) -> dict:
+    def get_trestle_status(self) -> dict[str, bool]:
         return {"trestle_available": self._trestle is not None}

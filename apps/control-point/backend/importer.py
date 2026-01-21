@@ -32,7 +32,7 @@ def normalize_assertion(sentence: str) -> str:
 
 def infer_scope_types(sentence: str) -> list[ScopeType]:
     scopes: list[ScopeType] = []
-    s = sentence.lower()
+    s: str = sentence.lower()
     if re.search(r"api|endpoint", s):
         scopes.append(ScopeType.API)
     if re.search(r"ui|frontend", s):
@@ -47,7 +47,7 @@ def infer_scope_types(sentence: str) -> list[ScopeType]:
 
 
 def infer_severity(sentence: str) -> ClaimSeverity:
-    s = sentence.lower()
+    s: str = sentence.lower()
     if re.search(r"must not|never", s):
         return ClaimSeverity.BLOCK
     if re.search(r"must|required", s):
@@ -58,7 +58,7 @@ def infer_severity(sentence: str) -> ClaimSeverity:
 
 
 def infer_owner(sentence: str) -> str:
-    s = sentence.lower()
+    s: str = sentence.lower()
     for owner in ["ui", "env", "control-point", "api", "subsystem", "repo", "node"]:
         if owner in s:
             return owner
@@ -82,9 +82,11 @@ async def import_claims(file: UploadFile = File(...)) -> list[Claim]:
         content = await file.read()
         # Accept either JSON (list of sentences) or raw text
         try:
-            data = json.loads(content)
+            data = json.loads(content.decode("utf-8"))
             if isinstance(data, list):
-                sentences = [str(s) for s in data]
+                sentences = [
+                    str(s) if s is not None else "" for s in data if isinstance(s, (str, int, float, bool, type(None)))
+                ]
             elif isinstance(data, str):
                 sentences = extract_sentences(data)
             else:
@@ -93,7 +95,7 @@ async def import_claims(file: UploadFile = File(...)) -> list[Claim]:
             # Fallback: treat as raw text
             sentences = extract_sentences(content.decode("utf-8"))
 
-        candidate_claims = []
+        candidate_claims: list[Claim] = []
         for sentence in sentences:
             kind = classify_sentence(sentence)
             if kind is None:
@@ -119,7 +121,7 @@ async def import_claims(file: UploadFile = File(...)) -> list[Claim]:
         # Import here to avoid circular import during app startup.
         from . import main as backend_main
 
-        imported = []
+        imported: list[Claim] = []
         for claim in candidate_claims:
             # Gate registration: schema, uniqueness, conflict
             try:
@@ -145,13 +147,13 @@ async def import_claims(file: UploadFile = File(...)) -> list[Claim]:
                 scope.api = "*"
             if ScopeType.SUBSYSTEM in st and "ui" in first_claim.assertion.lower():
                 scope.subsystem = "ui"
-            if ScopeType.SUBSYSTEM in st and "node" in first_claim.assertion.lower():
+            if ScopeType.SUBSYSTEM in st and "node" in str(first_claim.assertion).lower():
                 scope.subsystem = "node"
             gate_result = backend_main.gate_check(scope)
             if hasattr(gate_result, "conflicts") and gate_result.conflicts:
                 raise HTTPException(
                     status_code=409,
-                    detail={"conflicts": [c.dict() for c in gate_result.conflicts]},
+                    detail={"conflicts": [c.model_dump() for c in gate_result.conflicts]},
                 )
         return imported
     except HTTPException:

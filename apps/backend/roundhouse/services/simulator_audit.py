@@ -8,8 +8,9 @@ from typing import Any, Dict, List
 AUDIT_LOG_PATH = Path(__file__).resolve().parent.parent.parent / "artifacts" / "simulator-selection-log.jsonl"
 
 
-def log_selection(artifact_name: str, user: str = "system") -> None:
+def log_selection(version: str, artifact_name: str, user: str = "system") -> None:
     entry = {
+        "version": version,
         "artifact_name": artifact_name,
         "user": user,
         "timestamp": datetime.now(timezone.utc).isoformat(),

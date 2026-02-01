@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from roundhouse.services.manifest_sync import fetch_manifest_from_github, get_manifest_sync_config
+from roundhouse.services.manifest_sync import (
+    BuildManifest,
+    ManifestError,
+    fetch_manifest_from_github,
+    get_manifest,
+    get_manifest_sync_config,
+)
 
 router = APIRouter(prefix="/api/simulators", tags=["simulators"])
 
@@ -20,22 +24,23 @@ async def refresh_manifest() -> ManifestRefreshResponse:
     repo, release_tag, asset_name, token = get_manifest_sync_config()
     if not repo:
         return ManifestRefreshResponse(success=False, detail="Repository not configured")
-    ok = fetch_manifest_from_github(repo, release_tag, asset_name, token)
-    if ok:
-        return ManifestRefreshResponse(success=True, detail="Manifest refreshed from GitHub")
-    else:
-        return ManifestRefreshResponse(success=False, detail="Failed to fetch manifest from GitHub")
-
-
-MANIFEST_PATH = Path(__file__).resolve().parent.parent.parent / "artifacts" / "build-artifact-manifest.json"
-
-router = APIRouter(prefix="/api/simulators", tags=["simulators"])
+    try:
+        fetch_manifest_from_github(repo, release_tag, asset_name, token)
+    except ManifestError as exc:
+        raise HTTPException(
+            status_code=exc.status_code,
+            detail={"error": exc.code, "message": str(exc)},
+        ) from exc
+    return ManifestRefreshResponse(success=True, detail="Manifest refreshed from GitHub")
 
 
 class SimulatorInventoryItem(BaseModel):
+    artifact_name: str
     simulator_id: str
     platform: str
     version: str
+    release_tag: str
+    artifact_type: str
     status: str
     size_bytes: int
     build_timestamp: str
@@ -44,15 +49,38 @@ class SimulatorInventoryItem(BaseModel):
 
 @router.get("/inventory", response_model=list[SimulatorInventoryItem])
 async def get_simulator_inventory() -> list[SimulatorInventoryItem]:
-    # Dummy data for local dev
-    return [
-        SimulatorInventoryItem(
-            simulator_id="sim-1",
-            platform="wasm",
-            version="1.0.0",
-            status="available",
-            size_bytes=12345678,
-            build_timestamp="2026-01-21T00:00:00Z",
-            checksum="dummy",
+    repo, release_tag, asset_name, token = get_manifest_sync_config()
+    try:
+        manifests: list[BuildManifest] = get_manifest(repo, release_tag, asset_name, token)
+    except ManifestError as exc:
+        status_code = getattr(exc, "status_code", 503)
+        raise HTTPException(
+            status_code=status_code,
+            detail={"error": exc.code, "message": str(exc)},
+        ) from exc
+    if not manifests:
+        raise HTTPException(
+            status_code=409,
+            detail={"error": "MANIFEST_EMPTY", "message": "Manifest contains no artifacts"},
         )
-    ]
+    items: list[SimulatorInventoryItem] = []
+    for manifest in manifests:
+        if not manifest.artifacts:
+            continue
+        for artifact in manifest.artifacts:
+            artifact_type = manifest.platform or "unknown"
+            items.append(
+                SimulatorInventoryItem(
+                    artifact_name=artifact.filename,
+                    simulator_id=manifest.artifact,
+                    platform=manifest.platform,
+                    version=manifest.version,
+                    release_tag=manifest.release_tag,
+                    artifact_type=artifact_type,
+                    status="available",
+                    size_bytes=0,
+                    build_timestamp="",
+                    checksum=artifact.sha256 or "",
+                )
+            )
+    return items

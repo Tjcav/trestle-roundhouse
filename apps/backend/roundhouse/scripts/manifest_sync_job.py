@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Background job to periodically sync the build-artifact-manifest.json from GitHub Releases.
+Background job to periodically sync build-artifact-manifest.json assets from GitHub Releases.
 Can be run as a cron job or service.
 """
 
@@ -16,7 +16,11 @@ def main() -> NoReturn:
     while True:
         repo, release_tag, asset_name, token = get_manifest_sync_config()
         if repo:
-            ok = fetch_manifest_from_github(repo, release_tag, asset_name, token)
+            try:
+                ok = fetch_manifest_from_github(repo, release_tag, asset_name, token)
+            except Exception as exc:
+                print(f"[manifest-sync] Failed to refresh manifest from {repo} ({release_tag}): {exc}")
+                ok = False
             if ok:
                 print(f"[manifest-sync] Refreshed manifest from {repo} ({release_tag})")
             else:

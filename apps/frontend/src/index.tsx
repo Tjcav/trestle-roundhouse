@@ -1,9 +1,11 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "antd/dist/reset.css";
+import "./global.css";
 import { ConfigProvider, theme } from "antd";
 import { BrowserRouter } from "react-router-dom";
 import AppShell from "./AppShell";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -14,7 +16,9 @@ root.render(
   <React.StrictMode>
     <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
       <BrowserRouter>
-        <AppShell />
+        <ErrorBoundary>
+          <AppShell />
+        </ErrorBoundary>
       </BrowserRouter>
     </ConfigProvider>
   </React.StrictMode>,

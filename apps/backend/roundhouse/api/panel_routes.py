@@ -9,6 +9,7 @@ from core.nodes.models import NodeType
 from core.nodes.registry import NodeRecord, NodeRegistry, get_node_registry
 from roundhouse import load_settings
 from roundhouse.services.panel_desktop import (
+    PanelDesktopInstallResult,
     PanelDesktopManager,
     PanelDesktopProcessStatus,
     get_panel_desktop_manager,

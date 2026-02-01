@@ -109,7 +109,7 @@ export default function AppShell() {
               },
               {
                 key: "/simulators",
-                label: "Simulators",
+                label: "Simulator",
                 disabled: !trestleAvailable,
               },
               {

@@ -1,0 +1,58 @@
+name: Trestle Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+
+    env:
+      WORKSPACE_DIR: ${{ github.workspace }}
+      BUILD_MODE: firmware
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tooling
+        run: |
+          pip install --upgrade pip
+          pip install pre-commit
+
+      # ------------------------------------------------------------------
+      # Configuration invariants (fail fast)
+      # ------------------------------------------------------------------
+      - name: Validate trestle configuration
+        run: .devcontainer/scripts/validate-config.sh
+
+      # ------------------------------------------------------------------
+      # Generate all pre-commit configs (authoritative)
+      # ------------------------------------------------------------------
+      - name: Generate pre-commit configs
+        run: .devcontainer/scripts/generate-precommit.sh
+
+      - name: Ensure no generated drift
+        run: git diff --exit-code
+
+      # ------------------------------------------------------------------
+      # Run pre-commit per repo (multi-repo safe)
+      # ------------------------------------------------------------------
+      - name: Run pre-commit (all repos)
+        run: |
+          set -e
+          for repo in "$WORKSPACE_DIR"/*; do
+            [ -d "$repo" ] || continue
+            [ -f "$repo/trestle.repo.json" ] || continue
+
+            echo "▶ Running pre-commit in $(basename "$repo")"
+            (cd "$repo" && pre-commit run --all-files --show-diff-on-failure)
+          done

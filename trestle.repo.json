@@ -1,0 +1,159 @@
+{
+    "version": "1.0",
+    "repo_metadata": {
+        "name": "Trestle Roundhouse",
+        "repo": "trestle-roundhouse",
+        "repo_class": "tools",
+        "owner": "Tjcav",
+        "description": "Nx monorepo containing Roundhouse backend (FastAPI), frontend (React/Vite), and core contracts for profile authoring, validation, and simulation.",
+        "default_branch": "master",
+        "workspace_groups": [
+            "roundhouse",
+            "web",
+            "fullstack"
+        ]
+    },
+    "trestle_metadata": {
+        "subsystems": [
+            "roundhouse_backend",
+            "roundhouse_frontend",
+            "profile_editor"
+        ],
+        "ecosystems": [
+            "home_assistant",
+            "trestle"
+        ],
+        "device_types": [],
+        "interfaces": [
+            "profile_api",
+            "simulator_api",
+            "github_releases"
+        ],
+        "dependencies_consumed": [
+            "trestle-spec",
+            "trestle-coordinator-core",
+            "rock_panel7"
+        ]
+    },
+    "development": {
+        "toolchains": [
+            {
+                "name": "node",
+                "version": "20.x",
+                "environment": "node",
+                "required": true
+            },
+            {
+                "name": "python",
+                "version": "3.11",
+                "environment": "python3.11",
+                "required": true
+            },
+            {
+                "name": "nx",
+                "version": "18.x",
+                "environment": "node",
+                "required": true
+            }
+        ],
+        "devcontainer": {
+            "environments": [
+                "node",
+                "python3.11"
+            ],
+            "environment": {
+                "NODE_ENV": "development",
+                "ROUNDHOUSE_HA_URL": "",
+                "ROUNDHOUSE_HA_TOKEN": "",
+                "ROUNDHOUSE_PANEL_REPO": "Tjcav/rock_panel7",
+                "ROUNDHOUSE_PANEL_RELEASE_TAG": "latest"
+            },
+            "path_additions": [
+                "node_modules/.bin"
+            ],
+            "system_dependencies": {
+                "apt": [
+                    "git",
+                    "curl",
+                    "wget"
+                ],
+                "pip": [],
+                "npm": [
+                    "nx",
+                    "typescript",
+                    "vite",
+                    "pyright"
+                ]
+            },
+            "python_requirements_files": [
+                "apps/backend/requirements.txt"
+            ],
+            "vscode_settings": {
+                "typescript.tsdk": "node_modules/typescript/lib",
+                "eslint.workingDirectories": [
+                    "apps/frontend",
+                    "libs/shared-ts"
+                ],
+                "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+                "python.analysis.extraPaths": [
+                    "${workspaceFolder}/apps/backend",
+                    "${workspaceFolder}/core",
+                    "${workspaceFolder}/libs/shared_py"
+                ],
+                "files.exclude": {
+                    "**/.nx": true,
+                    "**/node_modules": true,
+                    "**/__pycache__": true,
+                    "**/.pytest_cache": true,
+                    "dist/": true
+                },
+                "search.exclude": {
+                    "**/node_modules": true,
+                    "**/.nx": true,
+                    "**/dist": true
+                }
+            },
+            "vscode_extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "biomejs.biome",
+                "charliermarsh.ruff",
+                "ms-python.vscode-pylance"
+            ]
+        },
+        "vscode": {
+            "extensions": [
+                "nrwl.angular-console",
+                "firsttris.vscode-jest-runner"
+            ]
+        }
+    },
+    "code_quality": {
+        "precommit": {
+            "global_policy": "global",
+            "baseline_profile": "python_only",
+            "overlay": {
+                "exclude_paths": [],
+                "exclude_paths_by_build_mode": {}
+            }
+        },
+        "static_analysis": [
+            {
+                "name": "biome",
+                "enabled": true
+            },
+            {
+                "name": "ruff",
+                "enabled": true
+            },
+            {
+                "name": "pyright",
+                "enabled": true
+            },
+            {
+                "name": "eslint",
+                "enabled": true
+            }
+        ]
+    }
+}
